@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="MakanYuk">
+<meta name="apple-mobile-web-app-title" content="Kudapan Warmindo">
 <meta name="theme-color" content="#FF6B35">
-<title>MakanYuk v2.1 — Makan Siang Kantor</title>
+<title>Kudapan Warmindo v2.3 — Snack time kantor numeta!</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -77,7 +77,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 .badge.diproses{background:var(--blue-light);color:var(--blue)}
 .badge.selesai{background:var(--green-light);color:#166534}
 /* FLOAT CART */
-.order-float{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:60;min-width:280px;max-width:calc(430px - 32px);background:var(--orange);border-radius:14px;padding:14px 18px;box-shadow:0 8px 32px rgba(255,107,53,.45);display:none;align-items:center;justify-content:space-between;cursor:pointer;animation:floatUp .3s ease}
+.order-float{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:200;min-width:280px;max-width:calc(430px - 32px);background:var(--orange);border-radius:14px;padding:14px 18px;box-shadow:0 8px 32px rgba(255,107,53,.45);display:none;align-items:center;justify-content:space-between;cursor:pointer;animation:floatUp .3s ease}
 .order-float.show{display:flex}
 .order-float-count{background:rgba(255,255,255,.25);color:#fff;font-size:12px;font-weight:800;padding:4px 10px;border-radius:99px}
 /* SUCCESS BANNER - lebih compact */
@@ -186,6 +186,25 @@ input:focus,select:focus,textarea:focus{border-color:var(--orange);box-shadow:0 
 .pesanan-count-pill{background:rgba(255,255,255,.25);color:#fff;font-size:12px;font-weight:800;padding:3px 10px;border-radius:99px}
 /* DIVIDER */
 .divider{border:none;border-top:2px dashed var(--border);margin:14px 0}
+/* CHAT PESAN */
+.chat-toggle-btn{display:flex;align-items:center;gap:5px;background:var(--blue-light);border:1.5px solid #90CAF9;color:var(--blue);font-size:11px;font-weight:700;padding:5px 11px;border-radius:99px;cursor:pointer;font-family:inherit;transition:.15s;flex-shrink:0}
+.chat-toggle-btn.has-unread{background:var(--orange);border-color:var(--orange-dark);color:#fff;animation:rtpulse 1.5s infinite}
+.chat-toggle-btn:active{filter:brightness(.92)}
+.chat-box{background:var(--bg);border-radius:12px;padding:10px;margin-top:8px;border:1.5px solid var(--border)}
+.chat-msg{display:flex;gap:6px;margin-bottom:6px;align-items:flex-end}
+.chat-msg.warmindo{flex-direction:row}
+.chat-msg.karyawan{flex-direction:row-reverse}
+.chat-bubble{max-width:75%;padding:8px 11px;border-radius:14px;font-size:13px;line-height:1.5;word-break:break-word}
+.chat-msg.warmindo .chat-bubble{background:#fff;border:1.5px solid var(--border);border-bottom-left-radius:4px;color:var(--text)}
+.chat-msg.karyawan .chat-bubble{background:var(--orange);color:#fff;border-bottom-right-radius:4px}
+.chat-sender{font-size:10px;font-weight:700;color:var(--text3);margin-bottom:2px}
+.chat-time{font-size:10px;color:var(--text3);flex-shrink:0;padding-bottom:2px}
+.chat-input-row{display:flex;gap:6px;margin-top:8px;align-items:center}
+.chat-input-row input{flex:1;padding:9px 13px;font-size:13px;border:1.5px solid var(--border);border-radius:99px;background:#fff;font-family:inherit;outline:none}
+.chat-input-row input:focus{border-color:var(--orange)}
+.chat-send-btn{width:36px;height:36px;border-radius:50%;border:none;background:var(--orange);color:#fff;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.15s}
+.chat-send-btn:active{background:var(--orange-dark)}
+.chat-empty{text-align:center;padding:14px 0;font-size:12px;color:var(--text3);font-weight:600}
 </style>
 </head>
 <body>
@@ -222,7 +241,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--orange);box-shadow:0 
 <!-- CONNECTING -->
 <div class="screen" id="s-connecting">
   <div class="splash-logo">🍱</div>
-  <div class="splash-title">MakanYuk</div>
+  <div class="splash-title">Kudapan Warmindo</div>
   <div class="splash-sub">Menghubungkan ke Firebase...</div>
   <div class="splash-spinner"></div>
 </div>
@@ -231,8 +250,8 @@ input:focus,select:focus,textarea:focus{border-color:var(--orange);box-shadow:0 
 <div class="screen" id="s-login">
   <div style="background:linear-gradient(135deg,var(--orange) 0%,#FF8C42 100%);padding:48px 16px 36px;text-align:center;position:relative;overflow:hidden">
     <div style="font-size:52px;margin-bottom:8px">🍱</div>
-    <div style="font-size:26px;font-weight:800;color:#fff">MakanYuk</div>
-    <div style="font-size:13px;color:rgba(255,255,255,.75);margin-top:4px"><span class="rt-dot" style="background:#fff"></span>Sistem Makan Siang Kantor</div>
+    <div style="font-size:26px;font-weight:800;color:#fff">Kudapan Warmindo</div>
+    <div style="font-size:13px;color:rgba(255,255,255,.75);margin-top:4px"><span class="rt-dot" style="background:#fff"></span>Snack time kantor numeta!</div>
     <div style="position:absolute;right:-20px;top:-20px;width:120px;height:120px;background:rgba(255,255,255,.08);border-radius:50%"></div>
   </div>
   <div style="padding:20px 16px 0">
@@ -279,7 +298,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--orange);box-shadow:0 
     <div class="hero-logo-row">
       <div style="display:flex;align-items:center;gap:8px">
         <span style="font-size:22px">🍱</span>
-        <div><div style="font-size:16px;font-weight:800;color:#fff">MakanYuk</div><div style="font-size:10px;color:rgba(255,255,255,.65)">Makan Siang Kantor</div></div>
+        <div><div style="font-size:16px;font-weight:800;color:#fff">Kudapan Warmindo</div><div style="font-size:10px;color:rgba(255,255,255,.65)">Snack time kantor numeta!</div></div>
       </div>
       <div style="display:flex;align-items:center;gap:6px">
         <button class="notif-bell" id="k-suara-btn" onclick="toggleSuara()" title="Suara">🔊</button>
@@ -291,17 +310,19 @@ input:focus,select:focus,textarea:focus{border-color:var(--orange);box-shadow:0 
     <div class="hero-sub" id="k-jam-info">Hari ini makan apa? 😋</div>
     <div class="budget-pill">
       <span style="font-size:14px">💰</span>
-      <span class="budget-pill-text" id="k-budget-pill">Jatah makan: Rp 15.000/hari</span>
+      <span class="budget-pill-text" id="k-budget-pill">Jatah makan: Rp 7.500/hari</span>
     </div>
   </div>
   <div style="padding:12px 16px 0" id="k-content"><div class="loading-wrap"><div class="spinner"></div>Memuat...</div></div>
-  <div class="order-float" id="order-float" onclick="scrollToCart()">
-    <div style="display:flex;align-items:center;gap:10px">
-      <div class="order-float-count" id="float-count">0</div>
-      <div style="font-size:14px;font-weight:700;color:#fff">Lihat Pesanan</div>
-    </div>
-    <div style="font-size:14px;font-weight:800;color:#fff" id="float-price">Rp 0</div>
+</div>
+
+<!-- FLOAT ORDER BUTTON - di luar screen agar position:fixed bekerja benar -->
+<div class="order-float" id="order-float" onclick="scrollToCart()">
+  <div style="display:flex;align-items:center;gap:10px">
+    <div class="order-float-count" id="float-count">0</div>
+    <div style="font-size:14px;font-weight:700;color:#fff">Lihat Pesanan</div>
   </div>
+  <div style="font-size:14px;font-weight:800;color:#fff" id="float-price">Rp 0</div>
 </div>
 
 <!-- WARMINDO -->
@@ -371,7 +392,92 @@ input:focus,select:focus,textarea:focus{border-color:var(--orange);box-shadow:0 
   </div>
 </div>
 
-<!-- MODAL GANTI PIN -->
+<!-- MODAL BAYAR TAGIHAN -->
+<div class="modal-overlay" id="modal-bayar">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div style="text-align:center;margin-bottom:16px">
+      <div style="font-size:40px;margin-bottom:6px">💳</div>
+      <div style="font-size:17px;font-weight:800">Bayar Tagihan</div>
+      <div style="font-size:13px;color:var(--text3);margin-top:4px" id="bayar-nama-label">-</div>
+      <div style="font-size:22px;font-weight:800;color:var(--red);margin-top:6px" id="bayar-jumlah-label">-</div>
+    </div>
+    <!-- Tab pilih metode -->
+    <div style="display:flex;gap:6px;margin-bottom:16px" id="bayar-tab-row">
+      <div id="tab-qris" onclick="switchBayarTab('qris')"
+        style="flex:1;padding:10px;border-radius:10px;background:var(--orange);color:#fff;font-size:13px;font-weight:700;text-align:center;cursor:pointer">
+        📱 QRIS
+      </div>
+      <div id="tab-tf" onclick="switchBayarTab('tf')"
+        style="flex:1;padding:10px;border-radius:10px;background:var(--bg);color:var(--text3);border:1.5px solid var(--border);font-size:13px;font-weight:700;text-align:center;cursor:pointer">
+        🏦 Transfer Bank
+      </div>
+    </div>
+    <!-- Panel QRIS -->
+    <div id="panel-qris">
+      <div id="qris-display" style="text-align:center;margin-bottom:12px;overflow:hidden">
+        <div style="background:var(--bg);border-radius:12px;padding:8px;border:2px dashed var(--border);text-align:center;overflow:hidden;box-sizing:border-box" id="qris-img-wrap">
+          <div style="font-size:13px;color:var(--text3)">QR Code belum diatur admin</div>
+        </div>
+      </div>
+      <div class="alert info" style="margin-bottom:12px">Scan QR di atas menggunakan aplikasi dompet digital (GoPay, OVO, Dana, ShopeePay, dll). Nominal sesuai tagihan kamu.</div>
+    </div>
+    <!-- Panel Transfer Bank -->
+    <div id="panel-tf" style="display:none">
+      <div id="tf-display" style="margin-bottom:12px">
+        <div style="background:var(--bg);border-radius:12px;padding:14px;border:1.5px solid var(--border)" id="tf-info-wrap">
+          <div style="font-size:13px;color:var(--text3);text-align:center">Info rekening belum diatur admin</div>
+        </div>
+      </div>
+      <div class="alert info" style="margin-bottom:12px">Transfer ke rekening di atas sesuai jumlah tagihan. Pastikan nominal tepat agar mudah diverifikasi.</div>
+    </div>
+    <!-- Upload bukti -->
+    <div style="border-top:1.5px dashed var(--border);padding-top:14px;margin-top:4px">
+      <div style="font-size:12px;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">📎 Kirim Bukti Pembayaran</div>
+      <div style="font-size:12px;color:var(--text2);margin-bottom:10px;line-height:1.6">Setelah transfer/scan, screenshot bukti dan kirim ke admin lewat chat, atau ketik nominal yang sudah dibayar di bawah.</div>
+      <div class="fg" style="margin-bottom:10px">
+        <label>Nominal yang dibayar (Rp)</label>
+        <input type="number" id="bayar-nominal" placeholder="mis: 5000" inputmode="numeric">
+      </div>
+      <div class="fg" style="margin-bottom:12px">
+        <label>Catatan (opsional)</label>
+        <input type="text" id="bayar-catatan" placeholder="mis: sudah transfer via BCA">
+      </div>
+      <button class="btn primary" onclick="kirimBuktiPembayaran()" style="background:var(--green);box-shadow:0 4px 16px rgba(29,191,115,.35)">✅ Kirim Konfirmasi Pembayaran</button>
+      <button class="btn secondary" style="margin-top:8px" onclick="closeModal('modal-bayar')">Tutup</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PENGATURAN PEMBAYARAN (Admin) -->
+<div class="modal-overlay" id="modal-payment-settings">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div style="font-size:17px;font-weight:800;margin-bottom:16px">💳 Pengaturan Pembayaran</div>
+    <div class="section-label">📱 QRIS</div>
+    <!-- Preview QRIS -->
+    <div id="ps-qris-preview" style="display:none;text-align:center;margin-bottom:12px">
+      <img id="ps-qris-img" src="" style="width:100%;max-width:200px;height:auto;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.12)" alt="Preview QRIS">
+      <div style="margin-top:8px;display:flex;gap:8px;justify-content:center">
+        <span style="font-size:11px;color:var(--green);font-weight:700">✅ Gambar QRIS tersimpan</span>
+        <button onclick="hapusQrisGambar()" style="font-size:11px;color:var(--red);font-weight:700;background:none;border:none;cursor:pointer;font-family:inherit;padding:0">✕ Hapus</button>
+      </div>
+    </div>
+    <div id="ps-qris-upload-area" style="border:2px dashed var(--orange);border-radius:12px;padding:20px;text-align:center;cursor:pointer;margin-bottom:12px;background:var(--orange-light)" onclick="document.getElementById('ps-qris-file').click()">
+      <div style="font-size:32px;margin-bottom:6px">📷</div>
+      <div style="font-size:13px;font-weight:700;color:var(--orange)">Tap untuk upload foto QRIS</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:4px">dari Galeri / Kamera HP</div>
+      <input type="file" id="ps-qris-file" accept="image/*" style="display:none" onchange="piliGambarQris(this)">
+    </div>
+    <input type="hidden" id="ps-qris-url">
+    <div class="section-label">🏦 Transfer Bank</div>
+    <div class="fg"><label>Nama Bank</label><input type="text" id="ps-bank-nama" placeholder="mis: BCA, BRI, Mandiri, BNI"></div>
+    <div class="fg"><label>Nomor Rekening</label><input type="number" id="ps-bank-norek" placeholder="mis: 1234567890" inputmode="numeric"></div>
+    <div class="fg" style="margin-bottom:4px"><label>Atas Nama</label><input type="text" id="ps-bank-atasnama" placeholder="mis: PT Maju Jaya"></div>
+    <button class="btn primary" onclick="simpanPaymentSettings()" style="margin-top:8px">💾 Simpan Pengaturan</button>
+    <button class="btn secondary" style="margin-top:8px" onclick="closeModal('modal-payment-settings')">Batal</button>
+  </div>
+</div>
 <div class="modal-overlay" id="modal-pin">
   <div class="modal">
     <div class="modal-handle"></div>
@@ -464,7 +570,42 @@ input:focus,select:focus,textarea:focus{border-color:var(--orange);box-shadow:0 
 // ─────────────────────────────────────────────────────────
 //  CONSTANTS
 // ─────────────────────────────────────────────────────────
-var BUDGET = 15000;
+// ── VERSIONING BUDGET: histori nilai jatah makan per periode ──
+// Setiap pesanan dihitung pakai budget yang BERLAKU PADA TANGGAL pesanan itu dibuat,
+// bukan nilai budget saat ini. Ini menjaga tagihan/riwayat lama tetap konsisten
+// walau kebijakan budget berubah di kemudian hari.
+var BUDGET_HISTORY=[
+  {mulai:'2000-01-01', nilai:15000}, // budget lama, berlaku untuk semua histori sebelum cutover di bawah
+  {mulai:'2026-07-28', nilai:7500}   // ⬅ EFEKTIF 28 Juli 2026: budget turun jadi Rp 7.500/hari
+];
+function getBudgetForDate(tgl){
+  // tgl format 'YYYY-MM-DD'. Cari nilai budget yang berlaku pada tanggal tsb.
+  var v=BUDGET_HISTORY[0].nilai;
+  for(var i=0;i<BUDGET_HISTORY.length;i++){
+    if(tgl>=BUDGET_HISTORY[i].mulai)v=BUDGET_HISTORY[i].nilai;else break;
+  }
+  return v;
+}
+// BUDGET = nilai yang berlaku HARI INI. Dipakai untuk konteks "pesanan baru/hari ini"
+// (form pesan, keranjang, filter menu). Untuk kalkulasi lintas tanggal/histori,
+// selalu pakai getBudgetForDate(tanggal_terkait), JANGAN pakai BUDGET langsung.
+var BUDGET=getBudgetForDate(today());
+// Banner peringatan perubahan budget: tampil H-7 sebelum tanggal efektif (mode "akan berubah")
+// dan tetap tampil s/d H+7 setelahnya (mode "baru saja berubah"), lalu otomatis hilang.
+function getBudgetChangeBanner(){
+  var t=today();
+  for(var i=1;i<BUDGET_HISTORY.length;i++){
+    var h=BUDGET_HISTORY[i],prev=BUDGET_HISTORY[i-1];
+    var diffDays=Math.round((new Date(h.mulai)-new Date(t))/86400000);
+    if(diffDays>0&&diffDays<=7){
+      return'<div class="alert warning">⚠️ <strong>Perubahan jatah makan:</strong> turun dari Rp '+prev.nilai.toLocaleString('id')+' menjadi <strong>Rp '+h.nilai.toLocaleString('id')+'/hari</strong>, efektif mulai '+fmtDate(h.mulai)+'.</div>';
+    }
+    if(diffDays<=0&&diffDays>=-7){
+      return'<div class="alert success">✅ <strong>Jatah makan sudah berubah</strong> menjadi Rp '+h.nilai.toLocaleString('id')+'/hari sejak '+fmtDate(h.mulai)+'. Pesanan sebelum tanggal ini tetap dihitung dengan jatah lama.</div>';
+    }
+  }
+  return'';
+}
 var ADMIN_PIN = '0000';
 var WARMINDO_PIN = '9999';
 var DAYS_ID = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
@@ -499,7 +640,7 @@ var keranjang={},ratingPid=null,ratingMenuNama='',ratingValue=0;
 var selectedJadwalDay=new Date().getDay(),notifPermission=false;
 // showPesananExpanded: apakah ringkasan pesanan hari ini ditampilkan melebar
 var showPesananExpanded = true;
-var cache={karyawan:[],menu:[],pesanan:[],tagihan:{},jadwal:{},jamPesan:{buka:'07:00',tutup:'10:00',aktif:1},rating:{},lunasHistory:{},lunasBayar:{}};
+var cache={karyawan:[],menu:[],pesanan:[],tagihan:{},jadwal:{},jamPesan:{buka:'07:00',tutup:'10:00',aktif:1},rating:{},lunasHistory:{},lunasBayar:{},chatPesan:{}};
 
 // ─────────────────────────────────────────────────────────
 //  CONFIG
@@ -518,10 +659,10 @@ function connectFirebase(cfg){
   try{if(firebase.apps.length)firebase.apps.forEach(function(a){try{a.delete();}catch(e){}});}catch(e){}
   try{
     firebase.initializeApp(cfg);db=firebase.database();
-    db.ref('.info/connected').once('value').then(function(){setupInitialData();}).catch(function(err){
-      showScreen('s-setup');var el=document.getElementById('cfg-err');el.textContent='Gagal: '+err.message;el.style.display='block';
-    });
-  }catch(err){showScreen('s-setup');var el=document.getElementById('cfg-err');el.textContent='Error: '+err.message;el.style.display='block';}
+    var _done=false;
+    var _to=setTimeout(function(){if(!_done){_done=true;setupInitialData();}},5000);
+    db.ref('.info/connected').on('value',function(){if(!_done){_done=true;clearTimeout(_to);setupInitialData();}});
+  }catch(err){showScreen('s-setup');var el=document.getElementById('cfg-err');if(el){el.textContent='Error: '+err.message;el.style.display='block';}}
 }
 function setupInitialData(){
   db.ref('karyawan').once('value').then(function(snap){
@@ -532,7 +673,45 @@ function setupInitialData(){
       b['jamPesan']={buka:'07:00',tutup:'10:00',aktif:1};
       return db.ref().update(b);
     }
-  }).then(function(){startListeners();showScreen('s-login');document.getElementById('a-date-header').innerHTML='<span class="rt-dot" style="background:#fff"></span>'+fmtDate(today());});
+  }).then(function(){
+    startListeners();
+    document.getElementById('a-date-header').innerHTML='<span class="rt-dot" style="background:#fff"></span>'+fmtDate(today());
+    // Restore session — tunggu data karyawan Firebase benar-benar masuk (bukan timeout buta)
+    try{
+      var _sess=JSON.parse(localStorage.getItem('myk_session')||'null');
+      // Session valid max 12 jam
+      if(_sess&&_sess.role&&_sess.user&&(Date.now()-(_sess.ts||0))<12*60*60*1000){
+        if(_sess.role==='karyawan'){
+          // Baca langsung dari Firebase — pasti dapat data terbaru, tidak bergantung cache timing
+          db.ref('karyawan/'+_sess.user.id).once('value').then(function(snap){
+            if(snap.exists()){
+              var _k=snap.val();
+              currentRole='karyawan';currentUser=_k;
+              showScreen('s-karyawan');window.scrollTo(0,0);
+              updateNotifBtn();updateSuaraBtn();
+              keranjang={};showPesananExpanded=true;renderKaryawan();
+            } else {
+              // Akun memang sudah dihapus admin — hapus session, minta login ulang
+              localStorage.removeItem('myk_session');
+              showScreen('s-login');
+            }
+          }).catch(function(){showScreen('s-login');});
+        } else if(_sess.role==='warmindo'){
+          currentRole='warmindo';currentUser=_sess.user;
+          showScreen('s-warmindo');window.scrollTo(0,0);
+          updateNotifBtn();updateSuaraBtn();renderWarmindo();setTimeout(cekPesananTerlewat,2000);
+        } else if(_sess.role==='admin'){
+          currentRole='admin';currentUser=_sess.user;
+          showScreen('s-admin');window.scrollTo(0,0);
+          updateNotifBtn();updateSuaraBtn();activeAdminTab='rekap';renderAdminAll();
+        } else {
+          showScreen('s-login');
+        }
+        return;
+      }
+    }catch(e){}
+    showScreen('s-login');
+  });
 }
 
 // ─────────────────────────────────────────────────────────
@@ -540,7 +719,7 @@ function setupInitialData(){
 // ─────────────────────────────────────────────────────────
 function startListeners(){
   clearListeners();
-  var refs={karyawan:db.ref('karyawan'),menu:db.ref('menu'),pesanan:db.ref('pesanan'),tagihan:db.ref('tagihan'),jadwal:db.ref('jadwal'),jamPesan:db.ref('jamPesan'),rating:db.ref('rating'),lunasBayar:db.ref('lunasBayar'),lunasHistory:db.ref('lunasHistory')};
+  var refs={karyawan:db.ref('karyawan'),menu:db.ref('menu'),pesanan:db.ref('pesanan'),tagihan:db.ref('tagihan'),jadwal:db.ref('jadwal'),jamPesan:db.ref('jamPesan'),rating:db.ref('rating'),lunasBayar:db.ref('lunasBayar'),lunasHistory:db.ref('lunasHistory'),chatPesan:db.ref('chatPesan')};
   var prevCount=cache.pesanan.length;
   var h1=refs.karyawan.on('value',function(s){cache.karyawan=s.exists()?Object.values(s.val()):[];renderLoginNama();if(currentRole==='admin'&&activeAdminTab==='akun')renderAdminTab('akun');});
   var h2=refs.menu.on('value',function(s){cache.menu=s.exists()?Object.values(s.val()):[];if(currentRole==='admin'&&activeAdminTab==='menu')renderAdminTab('menu');if(currentRole==='karyawan')renderKaryawan();});
@@ -559,7 +738,40 @@ function startListeners(){
   var h7=refs.rating.on('value',function(s){cache.rating=s.exists()?(s.val()||{}):{};if(currentRole==='admin'&&activeAdminTab==='menu')renderAdminTab('menu');if(currentRole==='warmindo')renderWarmindo();});
   var h8=refs.lunasHistory.on('value',function(s){cache.lunasHistory=s.exists()?(s.val()||{}):{};if(currentRole==='admin'&&activeAdminTab==='tagihan')renderAdminTab('tagihan');if(currentRole==='karyawan')renderKaryawan();});
   var h9=refs.lunasBayar.on('value',function(s){cache.lunasBayar=s.exists()?(s.val()||{}):{};if(currentRole==='admin'&&activeAdminTab==='tagihan')renderAdminTab('tagihan');if(currentRole==='karyawan')renderKaryawan();});
-  listeners=[{ref:refs.karyawan,event:'value',handler:h1},{ref:refs.menu,event:'value',handler:h2},{ref:refs.pesanan,event:'value',handler:h3},{ref:refs.tagihan,event:'value',handler:h4},{ref:refs.jadwal,event:'value',handler:h5},{ref:refs.jamPesan,event:'value',handler:h6},{ref:refs.rating,event:'value',handler:h7},{ref:refs.lunasHistory,event:'value',handler:h8},{ref:refs.lunasBayar,event:'value',handler:h9}];
+  var h10=refs.chatPesan.on('value',function(s){
+    var newChat=s.exists()?(s.val()||{}):{};
+    // Deteksi pesan baru untuk karyawan yang sedang login
+    if(currentRole==='karyawan'&&currentUser){
+      var oldChat=cache.chatPesan||{};
+      Object.values(newChat).forEach(function(msg){
+        if(!oldChat[msg.id]&&msg.dari==='warmindo'&&msg.kid===currentUser.id){
+          sendBrowserNotif('💬 Pesan dari Warmindo',msg.teks);
+          if(_suaraAktif)playSound('status_update');
+          showToast('💬 Ada pesan dari Warmindo!','warn');
+        }
+      });
+    }
+    // Deteksi pesan baru untuk warmindo
+    if(currentRole==='warmindo'){
+      var oldChat2=cache.chatPesan||{};
+      Object.values(newChat).forEach(function(msg){
+        if(!oldChat2[msg.id]&&msg.dari==='karyawan'){
+          sendBrowserNotif('💬 Balasan dari '+msg.namaKaryawan,msg.teks);
+          if(_suaraAktif)playSound('status_update');
+          showToast('💬 Balasan dari '+msg.namaKaryawan+'!','warn');
+        }
+      });
+    }
+    cache.chatPesan=newChat;
+    // Re-render chat bubble yang sedang terbuka
+    if(_openChatPid){
+      var chatBoxEl=document.getElementById('chat-box-'+_openChatPid);
+      if(chatBoxEl)renderChatBox(_openChatPid,chatBoxEl);
+      // Update unread badge semua kartu
+      _refreshChatBadges();
+    }
+  });
+  listeners=[{ref:refs.karyawan,event:'value',handler:h1},{ref:refs.menu,event:'value',handler:h2},{ref:refs.pesanan,event:'value',handler:h3},{ref:refs.tagihan,event:'value',handler:h4},{ref:refs.jadwal,event:'value',handler:h5},{ref:refs.jamPesan,event:'value',handler:h6},{ref:refs.rating,event:'value',handler:h7},{ref:refs.lunasHistory,event:'value',handler:h8},{ref:refs.lunasBayar,event:'value',handler:h9},{ref:refs.chatPesan,event:'value',handler:h10}];
 }
 function clearListeners(){listeners.forEach(function(l){l.ref.off(l.event,l.handler);});listeners=[];}
 
@@ -567,54 +779,112 @@ function clearListeners(){listeners.forEach(function(l){l.ref.off(l.event,l.hand
 //  NOTIF
 // ─────────────────────────────────────────────────────────
 // ─────────────────────────────────────────────────────────
-//  SUARA NOTIFIKASI (Web Audio API — tanpa file eksternal)
+//  SUARA NOTIFIKASI
+//  - pesanan_baru (warmindo only): chime + TTS suara Indonesia
+//  - lainnya: Web Audio API nada
 // ─────────────────────────────────────────────────────────
 var _audioCtx=null;
 var _audioUnlocked=false;
 
-// Unlock AudioContext saat pertama kali user interaksi
 function unlockAudio(){
   if(_audioUnlocked)return;
   try{
     _audioCtx=new(window.AudioContext||window.webkitAudioContext)();
-    // Mainkan suara senyap untuk unlock
     var buf=_audioCtx.createBuffer(1,1,22050);
     var src=_audioCtx.createBufferSource();
     src.buffer=buf;src.connect(_audioCtx.destination);src.start(0);
     _audioUnlocked=true;
-    console.log('[Audio] Unlocked, state:',_audioCtx.state);
   }catch(e){console.warn('[Audio] Unlock gagal:',e);}
 }
-// Daftarkan unlock di setiap interaksi
 ['touchstart','touchend','mousedown','keydown','click'].forEach(function(ev){
   document.addEventListener(ev,unlockAudio,{once:false,passive:true});
 });
 
+// ── TTS helper — khusus warmindo, ucapkan teks dengan suara Indonesia ──
+function _speakWarmindo(teks){
+  if(!('speechSynthesis' in window)){return;}
+  // Batalkan ucapan sebelumnya agar tidak tumpuk
+  window.speechSynthesis.cancel();
+  var u=new SpeechSynthesisUtterance(teks);
+  u.lang='id-ID';
+  u.rate=0.95;   // sedikit lebih lambat agar jelas
+  u.pitch=1.1;
+  u.volume=1;
+  // Pilih suara Bahasa Indonesia jika browser punya
+  var _setVoiceAndSpeak=function(){
+    var voices=window.speechSynthesis.getVoices();
+    var idVoice=voices.find(function(v){return v.lang==='id-ID';})
+               ||voices.find(function(v){return v.lang.startsWith('id');});
+    if(idVoice)u.voice=idVoice;
+    try{window.speechSynthesis.speak(u);}catch(e){console.warn('[TTS] gagal:',e);}
+  };
+  // getVoices() async di beberapa browser — tunggu jika perlu
+  if(window.speechSynthesis.getVoices().length>0){
+    _setVoiceAndSpeak();
+  } else {
+    window.speechSynthesis.onvoiceschanged=function(){
+      window.speechSynthesis.onvoiceschanged=null;
+      _setVoiceAndSpeak();
+    };
+  }
+}
+
 function playSound(type){
   if(!_suaraAktif)return;
-  // Coba unlock dulu jika belum
+
+  // ── VISIBILITY CHANGE: cek pesanan terlewat saat tab kembali aktif ──
+  // (didaftarkan sekali di sini agar akses ke fungsi lain sudah tersedia)
+  if(!window._visListenerAdded){
+    window._visListenerAdded=true;
+    document.addEventListener('visibilitychange',function(){
+      if(document.visibilityState==='visible'&&currentRole==='warmindo'){
+        setTimeout(cekPesananTerlewat,800);
+      }
+    });
+  }
+
+  // ── PESANAN BARU: khusus warmindo pakai chime + TTS ──
+  if(type==='pesanan_baru' && currentRole==='warmindo'){
+    // 1) Chime singkat dulu (ding-ding)
+    if(!_audioCtx){try{_audioCtx=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}}
+    if(_audioCtx){
+      var _doChime=function(){
+        try{
+          var ctx=_audioCtx;
+          [880,1108].forEach(function(freq,i){
+            var o=ctx.createOscillator(),g=ctx.createGain();
+            o.connect(g);g.connect(ctx.destination);
+            o.type='sine';o.frequency.value=freq;
+            var t=ctx.currentTime+i*0.18;
+            g.gain.setValueAtTime(0,t);
+            g.gain.linearRampToValueAtTime(0.45,t+0.03);
+            g.gain.exponentialRampToValueAtTime(0.001,t+0.4);
+            o.start(t);o.stop(t+0.41);
+          });
+        }catch(e){}
+      };
+      if(_audioCtx.state==='suspended'){
+        _audioCtx.resume().then(_doChime);
+      } else {
+        _doChime();
+      }
+    }
+    // 2) TTS setelah chime selesai (~400ms)
+    setTimeout(function(){
+      _speakWarmindo('Ada pesanan baru, yuk langsung diproses!');
+    },450);
+    return;
+  }
+
+  // ── SUARA LAIN: tetap pakai Web Audio API ──
   if(!_audioCtx){
     try{_audioCtx=new(window.AudioContext||window.webkitAudioContext)();}
     catch(e){console.warn('[Audio] Tidak bisa buat AudioContext:',e);return;}
   }
   var ctx=_audioCtx;
-  // Resume jika suspended (autoplay policy browser)
   var doPlay=function(){
     try{
-      if(type==='pesanan_baru'){
-        // Ding-dong naik: C5 E5 G5 C6
-        [523,659,784,1047].forEach(function(freq,i){
-          var o=ctx.createOscillator(),g=ctx.createGain();
-          o.connect(g);g.connect(ctx.destination);
-          o.type='sine';o.frequency.value=freq;
-          var t=ctx.currentTime+i*0.15;
-          g.gain.setValueAtTime(0,t);
-          g.gain.linearRampToValueAtTime(0.4,t+0.05);
-          g.gain.exponentialRampToValueAtTime(0.001,t+0.35);
-          o.start(t);o.stop(t+0.36);
-        });
-      } else if(type==='status_update'){
-        // Ping naik singkat
+      if(type==='status_update'){
         var o=ctx.createOscillator(),g=ctx.createGain();
         o.connect(g);g.connect(ctx.destination);
         o.type='sine';
@@ -624,7 +894,6 @@ function playSound(type){
         g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.3);
         o.start(ctx.currentTime);o.stop(ctx.currentTime+0.31);
       } else if(type==='pesanan_kirim'){
-        // 3 nada konfirmasi
         [440,554,659].forEach(function(freq,i){
           var o=ctx.createOscillator(),g=ctx.createGain();
           o.connect(g);g.connect(ctx.destination);
@@ -636,7 +905,7 @@ function playSound(type){
           o.start(t);o.stop(t+0.23);
         });
       } else if(type==='test'){
-        // Suara test saat toggle aktifkan
+        // Saat test (warmindo): chime + TTS perkenalan
         [523,659,784].forEach(function(freq,i){
           var o=ctx.createOscillator(),g=ctx.createGain();
           o.connect(g);g.connect(ctx.destination);
@@ -647,10 +916,24 @@ function playSound(type){
           g.gain.exponentialRampToValueAtTime(0.001,t+0.25);
           o.start(t);o.stop(t+0.26);
         });
+        if(currentRole==='warmindo'){
+          setTimeout(function(){_speakWarmindo('Suara notifikasi aktif!');},400);
+        }
+      } else if(type==='pesanan_baru'){
+        // Fallback jika bukan warmindo — nada biasa
+        [523,659,784,1047].forEach(function(freq,i){
+          var o=ctx.createOscillator(),g=ctx.createGain();
+          o.connect(g);g.connect(ctx.destination);
+          o.type='sine';o.frequency.value=freq;
+          var t=ctx.currentTime+i*0.15;
+          g.gain.setValueAtTime(0,t);
+          g.gain.linearRampToValueAtTime(0.4,t+0.05);
+          g.gain.exponentialRampToValueAtTime(0.001,t+0.35);
+          o.start(t);o.stop(t+0.36);
+        });
       }
     }catch(e){console.warn('[Audio] playSound error:',e);}
   };
-
   if(ctx.state==='suspended'){
     ctx.resume().then(doPlay).catch(function(e){console.warn('[Audio] resume gagal:',e);});
   } else {
@@ -769,7 +1052,12 @@ document.addEventListener('click',function(e){
   var wrap=document.getElementById('wrap-nama');
   if(dd&&wrap&&!wrap.contains(e.target))dd.style.display='none';
 });
-function showScreen(id){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});document.getElementById(id).classList.add('active');}
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  document.getElementById(id).classList.add('active');
+  // Sembunyikan tombol float jika bukan halaman karyawan
+  if(id!=='s-karyawan'){var f=document.getElementById('order-float');if(f)f.classList.remove('show');}
+}
 function showToast(msg,type){var t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(type==='ok'?' ok':type==='warn'?' warn':'');clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('show');},2500);}
 function closeModal(id){document.getElementById(id).classList.remove('show');}
 function getRatingMenu(menuNama){var all=Object.values(cache.rating).filter(function(r){return r.menu===menuNama;});if(all.length===0)return null;var avg=all.reduce(function(a,r){return a+r.nilai;},0)/all.length;return{avg:avg.toFixed(1),count:all.length};}
@@ -789,8 +1077,24 @@ function doLogin(){
   else{var kid=document.getElementById('login-nama').value;var k=cache.karyawan.find(function(x){return x.id===kid;});if(k&&pinInput===k.pin)loginAs('karyawan',k);else showLoginErr();}
 }
 function showLoginErr(){document.getElementById('login-err').style.display='block';clearPin();}
-function loginAs(role,user){currentRole=role;currentUser=user;showScreen('s-'+role);window.scrollTo(0,0);updateNotifBtn();updateSuaraBtn();if(role==='karyawan'){keranjang={};showPesananExpanded=true;renderKaryawan();}if(role==='warmindo')renderWarmindo();if(role==='admin'){activeAdminTab='rekap';renderAdminAll();}}
-function doLogout(){currentRole=null;currentUser=null;keranjang={};clearPin();document.getElementById('login-role').value='karyawan';onRoleChange();showScreen('s-login');window.scrollTo(0,0);}
+function loginAs(role,user){
+  currentRole=role;currentUser=user;
+  // Simpan session agar tidak perlu login ulang saat refresh
+  try{localStorage.setItem('myk_session',JSON.stringify({role:role,user:user,ts:Date.now()}));}catch(e){}
+  showScreen('s-'+role);window.scrollTo(0,0);
+  updateNotifBtn();updateSuaraBtn();
+  if(role==='karyawan'){keranjang={};showPesananExpanded=true;renderKaryawan();}
+  if(role==='warmindo'){
+    renderWarmindo();
+    setTimeout(cekPesananTerlewat,2000);
+  }
+  if(role==='admin'){activeAdminTab='rekap';renderAdminAll();}
+}
+function doLogout(){
+  currentRole=null;currentUser=null;keranjang={};
+  try{localStorage.removeItem('myk_session');}catch(e){}
+  clearPin();document.getElementById('login-role').value='karyawan';onRoleChange();showScreen('s-login');window.scrollTo(0,0);
+}
 
 // ─────────────────────────────────────────────────────────
 //  JAM PESAN
@@ -832,10 +1136,16 @@ function renderKaryawan(){
       if(p.status==='Menunggu')batalBtn='<button onclick="batalPesananById(\''+p.id+'\')" style="font-size:11px;font-weight:700;color:rgba(255,255,255,.75);border:none;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:99px;cursor:pointer;font-family:inherit;margin-left:6px">✕ Batal</button>';
       var ratingBtn='';
       if(p.status==='Selesai'&&!cache.rating[p.id])ratingBtn='<button onclick="openRating(\''+p.id+'\',\''+p.menu+'\')" style="font-size:11px;font-weight:700;color:rgba(255,255,255,.75);border:none;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:99px;cursor:pointer;font-family:inherit;margin-left:6px">⭐ Rating</button>';
+      var unread=getUnreadCountForPid(p.id);
+      var chatBtnClass='chat-toggle-btn'+(unread>0?' has-unread':'');
+      var chatBtn='<button class="'+chatBtnClass+'" data-chat-pid="'+p.id+'" onclick="toggleChatKaryawan(\''+p.id+'\')">💬 '+(unread>0?'Pesan ('+unread+')':'Chat')+'</button>';
       itemsHtml+='<div class="success-item">'
-        +'<div><div style="font-size:14px;font-weight:700;color:#fff">'+p.menu+(p.qty>1?' ×'+p.qty:'')+'</div>'
+        +'<div style="flex:1"><div style="font-size:14px;font-weight:700;color:#fff">'+p.menu+(p.qty>1?' ×'+p.qty:'')+'</div>'
+        +(( p.lokasi||'Kantor Beji')?'<div style="display:inline-flex;align-items:center;gap:3px;margin-top:3px;background:rgba(255,255,255,.2);color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:99px">📍 '+(p.lokasi||'Kantor Beji')+'</div>':'')
         +(p.catatan?'<div style="font-size:11px;color:rgba(255,255,255,.6);margin-top:2px">📝 '+p.catatan+'</div>':'')
-        +'<div style="margin-top:5px;display:flex;align-items:center;flex-wrap:wrap;gap:4px"><span class="badge '+p.status.toLowerCase()+'">'+p.status+'</span>'+batalBtn+ratingBtn+'</div></div>'
+        +'<div style="margin-top:5px;display:flex;align-items:center;flex-wrap:wrap;gap:4px"><span class="badge '+p.status.toLowerCase()+'">'+p.status+'</span>'+batalBtn+ratingBtn+chatBtn+'</div>'
+        +'<div id="k-chat-box-'+p.id+'" style="display:none;margin-top:8px"></div>'
+        +'</div>'
         +'<div style="text-align:right;flex-shrink:0"><div style="font-size:14px;font-weight:800;color:#fff">'+rp(p.harga)+'</div></div></div>';
     });
 
@@ -868,9 +1178,13 @@ function renderKaryawan(){
       +'<div style="font-size:24px">💳</div>'
       +'<div style="flex:1"><div style="font-size:12px;color:var(--red);font-weight:700;margin-bottom:2px">⚠️ Tagihan Over Budget Belum Lunas</div>'
       +'<div style="font-size:18px;font-weight:800;color:var(--red)">'+rp(tagihanAkumulasi)+'</div>'
-      +'<div style="font-size:11px;color:var(--text3);margin-top:2px">Hubungi admin untuk pelunasan</div>'
       +'</div>'
       +'<button onclick="toggleRincianKaryawan()" style="background:var(--red-light);border:1.5px solid #fcc;color:var(--red);font-size:11px;font-weight:700;padding:6px 10px;border-radius:8px;cursor:pointer;font-family:inherit;flex-shrink:0" id="btn-rincian-k">📋 Rincian</button>'
+      +'</div>'
+      // Tombol bayar
+      +'<div style="display:flex;gap:8px;width:100%">'
+      +'<button onclick="openBayarModal()" style="flex:1;background:var(--orange);color:#fff;border:none;font-size:13px;font-weight:700;padding:10px;border-radius:10px;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px">📱 Bayar via QRIS</button>'
+      +'<button onclick="openBayarModal(\'tf\')" style="flex:1;background:var(--blue-light);color:var(--blue);border:1.5px solid var(--blue);font-size:13px;font-weight:700;padding:10px;border-radius:10px;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px">🏦 Transfer Bank</button>'
       +'</div>'
       +'<div id="rincian-karyawan" style="display:none;width:100%">'+buildRincianOverPerHari(currentUser.id)+'</div>'
       +'</div>';
@@ -935,6 +1249,11 @@ function renderKaryawan(){
       +'<div id="k-selisih-row" style="display:none;justify-content:space-between;font-size:13px;margin-bottom:6px"><span style="color:var(--text2)">Tagihan kamu</span><span style="font-weight:800;color:var(--red)" id="k-total-selisih">-</span></div>'
       +'<div id="k-gratis-row" style="display:none;font-size:12px;color:var(--green);font-weight:600;padding:4px 0">✓ Gratis penuh — dalam jatah harian</div>'
       +'</div>'
+      +'<div class="fg" style="margin-top:4px"><label>📍 Antar ke Lokasi</label>'
+      +'<div style="display:flex;gap:8px" id="k-lokasi-wrap">'
+      +'<div class="lokasi-btn active" id="lok-beji" onclick="pilihLokasi(\'Kantor Beji\')" style="flex:1;padding:10px 8px;border-radius:10px;background:var(--orange);color:#fff;font-size:12px;font-weight:700;text-align:center;cursor:pointer;border:2px solid var(--orange)">🏢 Kantor Beji</div>'
+      +'<div class="lokasi-btn" id="lok-a3" onclick="pilihLokasi(\'Kantor A3\')" style="flex:1;padding:10px 8px;border-radius:10px;background:#fff;color:var(--text3);font-size:12px;font-weight:700;text-align:center;cursor:pointer;border:2px solid var(--border)">🏢 Kantor A3</div>'
+      +'</div></div>'
       +'<div class="fg" style="margin-top:4px"><label>Catatan (opsional)</label><input type="text" id="k-catatan" placeholder="mis: tidak pedas, tambah kerupuk..."></div>'
       +'<button class="btn primary" style="margin-top:4px" onclick="kirimPesan()">🚀 Kirim Pesanan</button>'
       +'</div></div>';
@@ -943,7 +1262,7 @@ function renderKaryawan(){
   // ── BAGIAN 4: RIWAYAT LAMA ──
   var riwayatHtml=renderRiwayatKaryawan();
 
-  el.innerHTML=pesananHariHtml+tagihanHtml+formHtml+riwayatHtml;
+  el.innerHTML=getBudgetChangeBanner()+pesananHariHtml+tagihanHtml+formHtml+riwayatHtml;
 }
 
 function togglePesananExpanded(){
@@ -964,7 +1283,7 @@ function renderRiwayatKaryawan(){
   dates.forEach(function(tgl){
     var items=byDate[tgl];
     var totalHarga=items.reduce(function(a,p){return a+p.harga;},0);
-    var over=Math.max(0,totalHarga-BUDGET);
+    var over=Math.max(0,totalHarga-getBudgetForDate(tgl));
     html+='<div class="riwayat-card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">'
       +'<div style="font-size:13px;font-weight:700">'+fmtDate(tgl)+'</div>'
       +'<div style="display:flex;gap:6px;align-items:center"><span style="font-size:12px;font-weight:800;color:var(--orange)">'+rp(totalHarga)+'</span>'
@@ -1009,6 +1328,20 @@ function renderMenuCards(menuList){
 }
 
 function tambahItem(mid){ubahQty(mid,1);}
+var _lokasiAntar='Kantor Beji';
+function pilihLokasi(lok){
+  _lokasiAntar=lok;
+  var btns=['lok-beji','lok-a3'];
+  var vals=['Kantor Beji','Kantor A3'];
+  btns.forEach(function(id,i){
+    var el=document.getElementById(id);if(!el)return;
+    var active=vals[i]===lok;
+    el.style.background=active?'var(--orange)':'#fff';
+    el.style.color=active?'#fff':'var(--text3)';
+    el.style.border=active?'2px solid var(--orange)':'2px solid var(--border)';
+  });
+}
+
 function scrollToCart(){var el=document.getElementById('k-ringkasan');if(el)el.scrollIntoView({behavior:'smooth'});}
 
 // ─── FILTER MENU KARYAWAN ───
@@ -1114,17 +1447,18 @@ function kirimPesan(){
   var now=new Date();
   var jam=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
   var catatan=(document.getElementById('k-catatan')||{}).value||'';
+  var lokasi=_lokasiAntar||'Kantor Beji';
   var updates={};
   var totalHarga=items.reduce(function(a,pair){var m=cache.menu.find(function(x){return x.id===pair[0];});return a+(m?m.harga*pair[1]:0);},0);
 
-  // ── LOGIKA TAGIHAN: budget Rp 15.000 per hari bersifat KUMULATIF ──
-  // Over = total semua pesanan hari ini - 15.000
+  // ── LOGIKA TAGIHAN: budget Rp 7.500 per hari bersifat KUMULATIF ──
+  // Over = total semua pesanan hari ini - 7.500
   // Tagihan aktif = total_over - over_yang_sudah_dilunasi
   var pesananHariIni=cache.pesanan.filter(function(p){return p.kid===currentUser.id&&p.tanggal===today();});
   var totalHariIniLama=pesananHariIni.reduce(function(a,p){return a+p.harga;},0);
   var totalHariIniSetelah=totalHariIniLama+totalHarga;
   var totalOverHariIni=Math.max(0,totalHariIniSetelah-BUDGET);
-  // Over yang sudah dibayar = total pesanan lunas hari ini - 15.000 (jika > 15.000)
+  // Over yang sudah dibayar = total pesanan lunas hari ini - 7.500 (jika > 7.500)
   var totalLunasHariIni=pesananHariIni.filter(function(p){return p._lunas;}).reduce(function(a,p){return a+p.harga;},0);
   var overSudahBayar=Math.max(0,totalLunasHariIni-BUDGET);
   // Tagihan baru = sisa over yang belum dibayar
@@ -1148,7 +1482,7 @@ function kirimPesan(){
     sisaBeban-=beban;
     var selisih=harga-beban;
     var pid='p'+Date.now()+'_'+pair[0]+'_'+Math.random().toString(36).slice(2,6);
-    updates['pesanan/'+pid]={id:pid,kid:currentUser.id,karyawan:currentUser.nama,menu:m.nama,qty:pair[1],harga:harga,selisih:selisih,beban:beban,catatan:catatan,waktu:jam,tanggal:today(),status:'Menunggu'};
+    updates['pesanan/'+pid]={id:pid,kid:currentUser.id,karyawan:currentUser.nama,menu:m.nama,qty:pair[1],harga:harga,selisih:selisih,beban:beban,catatan:catatan,lokasi:lokasi,waktu:jam,tanggal:today(),status:'Menunggu'};
   });
 
   // Update tagihan dengan nilai yang benar (akumulatif)
@@ -1206,26 +1540,55 @@ function renderWarmindo(){
   var ratingByMenu={};Object.values(cache.rating).forEach(function(r){if(!ratingByMenu[r.menu])ratingByMenu[r.menu]=[];ratingByMenu[r.menu].push(r.nilai);});
   var ratingHtml='';
   if(Object.keys(ratingByMenu).length>0){
-    // Urutkan menu berdasarkan avg rating tertinggi
     var sortedMenus=Object.entries(ratingByMenu).sort(function(a,b){
       var avgA=a[1].reduce(function(x,y){return x+y;},0)/a[1].length;
       var avgB=b[1].reduce(function(x,y){return x+y;},0)/b[1].length;
       return avgB-avgA;
     });
-    ratingHtml='<div class="section-label">⭐ Rating Menu</div><div class="card" style="padding:8px 0">';
-    sortedMenus.forEach(function(e){
-      var avg=(e[1].reduce(function(a,b){return a+b;},0)/e[1].length).toFixed(1);
-      var barW=Math.round((avg/5)*100);
-      ratingHtml+='<div class="list-row" style="flex-direction:column;align-items:flex-start;gap:4px">'
-        +'<div style="display:flex;align-items:center;justify-content:space-between;width:100%">'
-        +'<div style="display:flex;align-items:center;gap:8px"><span>'+getEmoji(e[0])+'</span><div style="font-size:14px;font-weight:700">'+e[0]+'</div></div>'
-        +'<div style="text-align:right"><div style="font-size:13px;font-weight:800;color:var(--yellow)">'+renderStars(avg)+'</div>'
-        +'<div style="font-size:11px;color:var(--text3)">'+avg+'/5 · '+e[1].length+' ulasan</div></div></div>'
-        +'<div style="width:100%;height:5px;background:var(--border);border-radius:99px;overflow:hidden">'
-        +'<div style="width:'+barW+'%;height:100%;background:var(--yellow);border-radius:99px;transition:.3s"></div></div>'
-        +'</div>';
-    });
-    ratingHtml+='</div>';
+    // Hitung rata-rata keseluruhan
+    var allNilai=Object.values(cache.rating).map(function(r){return r.nilai;});
+    var avgAll=(allNilai.reduce(function(a,b){return a+b;},0)/allNilai.length).toFixed(1);
+    var topMenu=sortedMenus[0];
+    var topAvg=(topMenu[1].reduce(function(a,b){return a+b;},0)/topMenu[1].length).toFixed(1);
+
+    // Summary collapsed (selalu tampil)
+    ratingHtml='<div class="section-label">⭐ Rating Menu</div>'
+      +'<div class="card" style="padding:12px 14px">'
+      // Summary row
+      +'<div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="toggleRatingDetail()">'
+      +'<div style="display:flex;gap:12px;align-items:center">'
+      +'<div style="text-align:center"><div style="font-size:22px;font-weight:900;color:var(--yellow)">'+avgAll+'</div><div style="font-size:10px;color:var(--text3);font-weight:600">RATA-RATA</div></div>'
+      +'<div style="width:1px;height:36px;background:var(--border)"></div>'
+      +'<div><div style="font-size:12px;font-weight:700">🏆 '+topMenu[0]+'</div><div style="font-size:11px;color:var(--yellow)">'+renderStars(topAvg)+' terfavorit</div></div>'
+      +'</div>'
+      +'<div style="display:flex;align-items:center;gap:8px">'
+      +'<div style="font-size:11px;color:var(--text3)">'+sortedMenus.length+' menu</div>'
+      +'<button id="rating-toggle-btn" style="background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:4px 10px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;color:var(--text2)">Lihat ▾</button>'
+      +'</div></div>'
+      // Detail (collapsed by default)
+      +'<div id="rating-detail" style="display:none;margin-top:12px;border-top:1px solid var(--border);padding-top:12px">'
+      // Filter bintang
+      +'<div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">'
+      +['Semua','⭐⭐⭐⭐⭐','⭐⭐⭐⭐','⭐⭐⭐','⭐⭐','⭐'].map(function(f,i){
+        var minVal=i===0?0:6-i;
+        var maxVal=i===0?5:6-i;
+        return'<div class="chip'+(i===0?' active':'')+'" onclick="filterRatingMin('+minVal+','+maxVal+',this)" style="font-size:11px;padding:4px 10px">'+f+'</div>';
+      }).join('')
+      +'</div>'
+      +'<div id="rating-menu-list">'
+      +sortedMenus.map(function(e){
+        var avg=(e[1].reduce(function(a,b){return a+b;},0)/e[1].length).toFixed(1);
+        var barW=Math.round((avg/5)*100);
+        return'<div class="list-row rating-item" data-avg="'+avg+'" style="flex-direction:column;align-items:flex-start;gap:4px">'
+          +'<div style="display:flex;align-items:center;justify-content:space-between;width:100%">'
+          +'<div style="display:flex;align-items:center;gap:8px"><span>'+getEmoji(e[0])+'</span><div style="font-size:13px;font-weight:700">'+e[0]+'</div></div>'
+          +'<div style="text-align:right"><div style="font-size:12px;font-weight:800;color:var(--yellow)">'+renderStars(avg)+' '+avg+'</div>'
+          +'<div style="font-size:10px;color:var(--text3)">'+e[1].length+' ulasan</div></div></div>'
+          +'<div style="width:100%;height:4px;background:var(--border);border-radius:99px;overflow:hidden">'
+          +'<div style="width:'+barW+'%;height:100%;background:var(--yellow);border-radius:99px"></div></div>'
+          +'</div>';
+      }).join('')
+      +'</div></div></div>';
   }
 
   // ── ULASAN & KOMENTAR lengkap ──
@@ -1295,17 +1658,67 @@ function renderWarmindo(){
 
 function renderPesananCard(p){
   var ini=inisial(p.karyawan);var next=p.status==='Menunggu'?'Diproses':p.status==='Diproses'?'Selesai':null;var btnClass=p.status==='Menunggu'?'proses':'done';
+  var unread=getUnreadCountForPid(p.id);
+  var chatBtnClass='chat-toggle-btn'+(unread>0?' has-unread':'');
   return'<div class="pesanan-card fade-in">'
     +'<div class="pesanan-card-header"><div class="pesanan-avatar">'+ini+'</div>'
     +'<div style="flex:1"><div style="font-size:15px;font-weight:700">'+p.karyawan+'</div>'
     +'<div style="font-size:13px;color:var(--text2)">'+getEmoji(p.menu)+' '+p.menu+(p.qty>1?' ×'+p.qty:'')+'</div>'
+    +(( p.lokasi||'Kantor Beji')?'<div style="display:inline-flex;align-items:center;gap:4px;margin-top:4px;background:'+((p.lokasi||'Kantor Beji')==='Kantor A3'?'#EDE9FE':'#FFF3E0')+';color:'+((p.lokasi||'Kantor Beji')==='Kantor A3'?'#6D28D9':'#E65100')+';font-size:11px;font-weight:700;padding:3px 8px;border-radius:99px">📍 '+(p.lokasi||'Kantor Beji')+'</div>':'')
     +(p.catatan?'<div style="font-size:11px;color:var(--text3);margin-top:3px">📝 '+p.catatan+'</div>':'')
     +'</div><span class="badge '+p.status.toLowerCase()+'">'+p.status+'</span></div>'
     +'<div class="pesanan-card-footer"><div style="font-size:15px;font-weight:800">'+rp(p.harga)+'</div>'
-    +(next?'<button class="btn-status '+btnClass+'" onclick="updateStatus(\''+p.id+'\',\''+next+'\')">Tandai '+next+' →</button>':'<div style="font-size:12px;font-weight:600;color:var(--green)">✓ Sudah selesai</div>')
-    +'</div></div>';
+    +'<div style="display:flex;gap:6px;align-items:center">'
+    +'<button class="'+chatBtnClass+'" data-chat-pid="'+p.id+'" onclick="toggleChat(\''+p.id+'\',\''+p.kid+'\',\''+escAttr(p.karyawan)+'\')">💬 '+(unread>0?'Pesan ('+unread+')':'Chat')+'</button>'
+    +(next?'<button class="btn-status '+btnClass+'" onclick="updateStatus(\''+p.id+'\',\''+next+'\')">'+next+' →</button>':'<div style="font-size:12px;font-weight:600;color:var(--green)">✓ Selesai</div>')
+    +'</div></div>'
+    +'<div id="chat-box-'+p.id+'" style="display:none;padding:0 14px 12px"></div>'
+    +'</div>';
 }
 function updateStatus(id,s){db.ref('pesanan/'+id+'/status').set(s).then(function(){showToast('Status: '+s);});}
+
+// ─── CEK PESANAN TERLEWAT SAAT BUKA APLIKASI ───
+function cekPesananTerlewat(){
+  if(currentRole!=='warmindo'||!_suaraAktif)return;
+  var menunggu=cache.pesanan.filter(function(p){
+    return p.tanggal===today()&&p.status==='Menunggu';
+  });
+  if(menunggu.length===0)return;
+
+  // Tunda sedikit agar AudioContext sudah ter-unlock dari interaksi login
+  setTimeout(function(){
+    if(menunggu.length===1){
+      speakTTS('Ada '+menunggu.length+' pesanan menunggu diproses. Segera cek ya!');
+    } else {
+      speakTTS('Ada '+menunggu.length+' pesanan yang belum diproses. Yuk segera dikerjakan!');
+    }
+    playSound('pesanan_baru');
+    showToast('🔔 '+menunggu.length+' pesanan menunggu!','warn');
+  },1200);
+}
+
+function toggleRatingDetail(){
+  var detail=document.getElementById('rating-detail');
+  var btn=document.getElementById('rating-toggle-btn');
+  if(!detail||!btn)return;
+  var open=detail.style.display!=='none';
+  detail.style.display=open?'none':'block';
+  btn.textContent=open?'Lihat ▾':'Tutup ▴';
+}
+function filterRatingMin(minVal,maxVal,el){
+  // Update chip aktif
+  if(el){
+    el.closest('.card').querySelectorAll('.chip').forEach(function(c){c.classList.remove('active');});
+    el.classList.add('active');
+  }
+  // Filter item
+  var items=document.querySelectorAll('.rating-item');
+  items.forEach(function(item){
+    var avg=parseFloat(item.getAttribute('data-avg'))||0;
+    var show=minVal===0||(avg>=minVal&&avg<=maxVal);
+    item.style.display=show?'':'none';
+  });
+}
 
 // ─────────────────────────────────────────────────────────
 //  ADMIN
@@ -1320,11 +1733,40 @@ function renderAdminAll(){renderAdminTab(activeAdminTab);}
 
 function getPesananFiltered(){
   var list=cache.pesanan.slice();
-  if(filterTanggal==='hari')list=list.filter(function(p){return p.tanggal===today();});
-  else if(filterTanggal==='minggu'){var cut=new Date();cut.setDate(cut.getDate()-7);list=list.filter(function(p){return new Date(p.tanggal)>=cut;});}
-  else if(filterTanggal==='bulan'){var ym=today().slice(0,7);list=list.filter(function(p){return p.tanggal.slice(0,7)===ym;});}
-  else if(filterTanggal==='custom'){if(filterDariTgl)list=list.filter(function(p){return p.tanggal>=filterDariTgl;});if(filterSampaiTgl)list=list.filter(function(p){return p.tanggal<=filterSampaiTgl;});}
+
+  // Normalisasi tanggal: pastikan format YYYY-MM-DD
+  function normTgl(t){
+    if(!t)return'';
+    // Kalau sudah YYYY-MM-DD langsung return
+    if(/^\d{4}-\d{2}-\d{2}$/.test(t))return t;
+    // Coba parse dan format ulang
+    try{return new Date(t).toISOString().slice(0,10);}catch(e){return'';}
+  }
+
+  var todayStr=today(); // YYYY-MM-DD
+  var todayYM=todayStr.slice(0,7); // YYYY-MM
+
+  if(filterTanggal==='hari'){
+    list=list.filter(function(p){return normTgl(p.tanggal)===todayStr;});
+  } else if(filterTanggal==='minggu'){
+    // 7 hari ke belakang — pakai string comparison agar timezone-safe
+    var d7=new Date(todayStr);d7.setDate(d7.getDate()-6);
+    var cutStr=d7.toISOString().slice(0,10);
+    list=list.filter(function(p){var t=normTgl(p.tanggal);return t>=cutStr&&t<=todayStr;});
+  } else if(filterTanggal==='bulan'){
+    list=list.filter(function(p){var t=normTgl(p.tanggal);return t.slice(0,7)===todayYM;});
+  } else if(filterTanggal==='semua'){
+    // Tampilkan semua — tidak difilter
+  } else if(filterTanggal==='custom'){
+    if(filterDariTgl)list=list.filter(function(p){return normTgl(p.tanggal)>=filterDariTgl;});
+    if(filterSampaiTgl)list=list.filter(function(p){return normTgl(p.tanggal)<=filterSampaiTgl;});
+  }
+
   if(filterNama!=='semua')list=list.filter(function(p){return p.kid===filterNama;});
+
+  // Buang data rusak (tanggal kosong)
+  list=list.filter(function(p){return normTgl(p.tanggal)!=='';});
+
   return list;
 }
 
@@ -1338,19 +1780,20 @@ function renderAdminTab(tab){
     var _rekapByKidDateAll={};
     list.forEach(function(p){
       var key=p.kid+'|'+p.tanggal;
-      if(!_rekapByKidDateAll[key])_rekapByKidDateAll[key]={total:0,lunas:0};
+      if(!_rekapByKidDateAll[key])_rekapByKidDateAll[key]={total:0,lunas:0,tanggal:p.tanggal};
       _rekapByKidDateAll[key].total+=p.harga;
       if(p._lunas)_rekapByKidDateAll[key].lunas+=p.harga;
     });
     var totalOver=Object.values(_rekapByKidDateAll).reduce(function(a,d){
-      var overTotal=Math.max(0,d.total-BUDGET);
-      var overBayar=Math.max(0,d.lunas-BUDGET);
+      var b=getBudgetForDate(d.tanggal);
+      var overTotal=Math.max(0,d.total-b);
+      var overBayar=Math.max(0,d.lunas-b);
       return a+Math.max(0,overTotal-overBayar);
     },0);
-    // Beban perusahaan = per kid+hari: min(total_semua_pesanan_hari_itu, BUDGET)
+    // Beban perusahaan = per kid+hari: min(total_semua_pesanan_hari_itu, budget hari itu)
     // Ini adalah total yang ditanggung kantor, tidak berubah meski ada yang lunas
     var totalBeban=Object.values(_rekapByKidDateAll).reduce(function(a,d){
-      return a+Math.min(d.total,BUDGET);
+      return a+Math.min(d.total,getBudgetForDate(d.tanggal));
     },0);
     // Hitung berapa karyawan unik yang punya pesanan di filter ini
     var kidUnikSet={};
@@ -1376,16 +1819,16 @@ function renderAdminTab(tab){
     var _rekapDetailByKey={};
     list.forEach(function(p){
       var key=p.kid+'|'+p.tanggal;
-      if(!_rekapDetailByKey[key])_rekapDetailByKey[key]={total:0,items:[]};
+      if(!_rekapDetailByKey[key])_rekapDetailByKey[key]={total:0,items:[],tanggal:p.tanggal};
       _rekapDetailByKey[key].total+=p.harga;
       _rekapDetailByKey[key].items.push(p);
     });
     var _bebanPerItem={};var _overPerItem={};
     Object.values(_rekapDetailByKey).forEach(function(g){
       // Untuk tampilan detail: hanya pesanan belum lunas, budget dihitung fresh
-      // (pesanan lunas sudah disembunyikan dari detail, jadi budget per tampilan harus fresh)
+      // sesuai tanggal grup ini (bukan budget hari ini, agar histori tetap konsisten)
       var itemsBelumLunas=g.items.filter(function(p){return!p._lunas;}).sort(function(a,b){return(a.waktu||'').localeCompare(b.waktu||'');});
-      var sisaBudget=BUDGET;
+      var sisaBudget=getBudgetForDate(g.tanggal);
       itemsBelumLunas.forEach(function(p){
         var beban=Math.min(p.harga,Math.max(0,sisaBudget));
         var over=p.harga-beban;
@@ -1432,9 +1875,10 @@ function renderAdminTab(tab){
         }).join('')+'</div>';
 
     document.getElementById('at-rekap').innerHTML=
+      getBudgetChangeBanner()
       // ── Summary utama (1 baris penuh) ──
-      '<div style="background:linear-gradient(135deg,var(--orange),#FF8C42);border-radius:12px;padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between">'
-      +'<div><div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.75)">BEBAN PERUSAHAAN</div><div style="font-size:20px;font-weight:800;color:#fff">'+rp(totalBeban)+'</div><div style="font-size:10px;color:rgba(255,255,255,.7);margin-top:2px">'+jumlahKaryawan+' org × maks Rp 15rb/hari</div></div>'
+      +'<div style="background:linear-gradient(135deg,var(--orange),#FF8C42);border-radius:12px;padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between">'
+      +'<div><div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.75)">BEBAN PERUSAHAAN</div><div style="font-size:20px;font-weight:800;color:#fff">'+rp(totalBeban)+'</div><div style="font-size:10px;color:rgba(255,255,255,.7);margin-top:2px">'+jumlahKaryawan+' org × maks '+rp(BUDGET)+'/hari (budget berlaku saat ini)</div></div>'
       +'<div style="text-align:right"><div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.75)">OVER BUDGET</div><div style="font-size:20px;font-weight:800;color:'+(totalOver>0?'#FFD700':'rgba(255,255,255,.9)')+'">'+rp(totalOver)+'</div><div style="font-size:10px;color:rgba(255,255,255,.7);margin-top:2px">belum dilunasi</div></div>'
       +'</div>'
       // ── 4 stat kecil dalam 2×2 ──
@@ -1493,13 +1937,14 @@ function renderAdminTab(tab){
           var k=cache.karyawan.find(function(x){return x.id===e[0];});if(!k)return'';
           // hariOver = hari yang total kumulatifnya > BUDGET (pakai semua pesanan)
           var hariOverList=Object.values(pesananByKidDateAll).filter(function(d){
-            return d.kid===e[0]&&Math.max(0,d.total-BUDGET)>0;
+            return d.kid===e[0]&&Math.max(0,d.total-getBudgetForDate(d.tanggal))>0;
           });
           var hariOver=hariOverList.length;
           // Hari yang sisa tagihannya sudah 0 (over sudah sepenuhnya dilunasi)
           var hariSudahLunas=hariOverList.filter(function(d){
-            var overTotal=Math.max(0,d.total-BUDGET);
-            var overBayar=Math.max(0,d.lunas-BUDGET);
+            var b=getBudgetForDate(d.tanggal);
+            var overTotal=Math.max(0,d.total-b);
+            var overBayar=Math.max(0,d.lunas-b);
             return overTotal-overBayar<=0;
           }).length;
           var hariSisaBelumLunas=hariOver-hariSudahLunas;
@@ -1525,10 +1970,24 @@ function renderAdminTab(tab){
       +'<button onclick="downloadTagihanPDF()" style="flex:1;background:var(--blue-light);color:var(--blue);border:1.5px solid var(--blue);font-size:12px;font-weight:700;padding:9px;border-radius:8px;cursor:pointer;font-family:inherit">🖨️ Cetak PDF</button>'
       +'</div>';
 
-    document.getElementById('at-tagihan').innerHTML=
-      '<div class="section-label">💳 Tagihan Over Budget</div>'
+    var tagihanEl=document.getElementById('at-tagihan');
+    tagihanEl.innerHTML=
+      getBudgetChangeBanner()
+      // Konfirmasi pembayaran (async)
+      +'<div id="konfirmasi-bayar-wrap"></div>'
+      // Pengaturan pembayaran shortcut
+      +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">'
+      +'<div class="section-label" style="margin-bottom:0">💳 Tagihan Over Budget</div>'
+      +'<button onclick="openPaymentSettings()" style="background:var(--orange-light);border:1.5px solid var(--orange);color:var(--orange);font-size:11px;font-weight:700;padding:6px 12px;border-radius:8px;cursor:pointer;font-family:inherit;flex-shrink:0">⚙️ Atur Rekening/QRIS</button>'
+      +'</div>'
       +downloadBtns
       +listHtml;
+
+    // Load konfirmasi pembayaran async — hanya tampil jika ada data
+    renderKonfirmasiBayar().then(function(html){
+      var wrap=document.getElementById('konfirmasi-bayar-wrap');
+      if(wrap)wrap.innerHTML=html; // kosong jika tidak ada konfirmasi
+    });
   }
 
   if(tab==='jadwal'){
@@ -1603,6 +2062,11 @@ function renderAdminTab(tab){
       +'<div id="import-akun-preview" style="display:none;background:var(--bg);border-radius:var(--radius-sm);padding:10px;margin-bottom:10px;max-height:200px;overflow-y:auto;font-size:12px"></div>'
       +'<button class="btn success" onclick="importKaryawanExcel()">📥 Import Sekarang</button>'
       +'</div>'
+      +'<div class="section-label">💳 Pengaturan Pembayaran</div>'
+      +'<div class="card" style="display:flex;align-items:center;justify-content:space-between">'
+      +'<div><div style="font-size:14px;font-weight:700">QRIS & Transfer Bank</div><div style="font-size:12px;color:var(--text3);margin-top:2px">Atur info pembayaran untuk karyawan</div></div>'
+      +'<button class="btn primary sm" onclick="openPaymentSettings()">⚙️ Atur</button>'
+      +'</div>'
       +'<div class="alert warning">⚠️ PIN admin: <strong>0000</strong> · PIN warmindo: <strong>9999</strong> · Jangan gunakan untuk karyawan.</div>';
   }
 }
@@ -1621,9 +2085,33 @@ function saveJadwalDay(){
 // ─────────────────────────────────────────────────────────
 function exportExcel(){
   var list=getPesananFiltered();if(list.length===0){showToast('Tidak ada data untuk di-export');return;}
-  var rows=[['No','Karyawan','Menu','Qty','Harga','Ditanggung','Over Budget','Status','Tanggal','Waktu','Catatan']];
-  list.sort(function(a,b){return a.tanggal>b.tanggal?1:-1;}).forEach(function(p,i){rows.push([i+1,p.karyawan,p.menu,p.qty,p.harga,p.beban,p.selisih||0,p.status,p.tanggal,p.waktu||'',p.catatan||'']);});
-  var tB=list.reduce(function(a,p){return a+p.beban;},0);var tO=list.reduce(function(a,p){return a+(p.selisih||0);},0);
+  // Rekalkukasi beban sama persis dengan dashboard
+  var _byKidDate={};
+  list.forEach(function(p){
+    var kidKey=(p.kid&&p.kid!=='')?p.kid:(p.karyawan+'_'+p.tanggal);
+    var key=kidKey+'|'+p.tanggal;
+    if(!_byKidDate[key])_byKidDate[key]=[];
+    _byKidDate[key].push(p);
+  });
+  Object.keys(_byKidDate).forEach(function(key){
+    var group=_byKidDate[key];
+    var totalGroup=group.reduce(function(a,x){return a+(Number(x.harga)||0);},0);
+    var bebanGroup=Math.min(totalGroup,getBudgetForDate(group[0].tanggal));
+    var sisaBeban=bebanGroup;
+    group.forEach(function(p,i){
+      var isLast=i===group.length-1;
+      var beban=isLast?sisaBeban:Math.round(bebanGroup*(p.harga/totalGroup));
+      sisaBeban-=beban;
+      p._bebanCalc=beban;
+      p._selisihCalc=Math.max(0,(Number(p.harga)||0)-beban);
+    });
+  });
+  var rows=[['No','Karyawan','Menu','Qty','Harga','Ditanggung Kantor','Over Budget','Status','Tanggal','Waktu','Catatan']];
+  list.sort(function(a,b){return a.tanggal>b.tanggal?1:-1;}).forEach(function(p,i){
+    rows.push([i+1,p.karyawan,p.menu,p.qty,p.harga,p._bebanCalc,p._selisihCalc,p.status,p.tanggal,p.waktu||'',p.catatan||'']);
+  });
+  var tB=list.reduce(function(a,p){return a+(p._bebanCalc||0);},0);
+  var tO=list.reduce(function(a,p){return a+(p._selisihCalc||0);},0);
   rows.push([]);rows.push(['','','','','TOTAL',tB,tO,'','','','']);
   var csv=rows.map(function(r){return r.map(function(c){return'"'+String(c).replace(/"/g,'""')+'"';}).join(',');}).join('\n');
   var blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
@@ -1637,34 +2125,43 @@ function exportExcel(){
 // ─────────────────────────────────────────────────────────
 function exportPDF(){
   var list=getPesananFiltered();if(list.length===0){showToast('Tidak ada data untuk di-export');return;}
-  // Kalkulasi pakai logika kumulatif per kid+hari (sama dengan dashboard)
-  var _pdfByKidDate={};
+  // Rekalkukasi beban sama persis dengan dashboard
+  var _byKidDate={};
   list.forEach(function(p){
-    var key=p.kid+'|'+p.tanggal;
-    if(!_pdfByKidDate[key])_pdfByKidDate[key]={total:0,lunas:0};
-    _pdfByKidDate[key].total+=p.harga;
-    if(p._lunas)_pdfByKidDate[key].lunas+=p.harga;
+    var kidKey=(p.kid&&p.kid!=='')?p.kid:(p.karyawan+'_'+p.tanggal);
+    var key=kidKey+'|'+p.tanggal;
+    if(!_byKidDate[key])_byKidDate[key]=[];
+    _byKidDate[key].push(p);
   });
-  var tB=Object.values(_pdfByKidDate).reduce(function(a,d){return a+Math.min(d.total,BUDGET);},0);
-  var tO=Object.values(_pdfByKidDate).reduce(function(a,d){
-    var overTotal=Math.max(0,d.total-BUDGET);
-    var overBayar=Math.max(0,d.lunas-BUDGET);
-    return a+Math.max(0,overTotal-overBayar);
-  },0);
+  Object.keys(_byKidDate).forEach(function(key){
+    var group=_byKidDate[key];
+    var totalGroup=group.reduce(function(a,x){return a+(Number(x.harga)||0);},0);
+    var bebanGroup=Math.min(totalGroup,getBudgetForDate(group[0].tanggal));
+    var sisaBeban=bebanGroup;
+    group.forEach(function(p,i){
+      var isLast=i===group.length-1;
+      var beban=isLast?sisaBeban:Math.round(bebanGroup*(p.harga/totalGroup));
+      sisaBeban-=beban;
+      p._bebanCalc=beban;
+      p._selisihCalc=Math.max(0,(Number(p.harga)||0)-beban);
+    });
+  });
+  var tB=list.reduce(function(a,p){return a+(p._bebanCalc||0);},0);
+  var tO=list.reduce(function(a,p){return a+(p._selisihCalc||0);},0);
   var sorted=list.sort(function(a,b){return a.tanggal>b.tanggal?1:-1;});
   var rows=sorted.map(function(p,i){
     var overCell;
-    if(p.selisih>0&&p._lunas){
-      overCell='<span style="color:#1DBF73;font-weight:700">✓ Lunas</span><br><span style="color:#9CA3AF;font-size:10px;text-decoration:line-through">+Rp '+p.selisih.toLocaleString('id')+'</span>';
-    } else if(p.selisih>0){
-      overCell='<span style="color:#E53935;font-weight:700">+Rp '+p.selisih.toLocaleString('id')+'</span>';
+    if(p._selisihCalc>0&&p._lunas){
+      overCell='<span style="color:#1DBF73;font-weight:700">✓ Lunas</span><br><span style="color:#9CA3AF;font-size:10px;text-decoration:line-through">+Rp '+p._selisihCalc.toLocaleString('id')+'</span>';
+    } else if(p._selisihCalc>0){
+      overCell='<span style="color:#E53935;font-weight:700">+Rp '+p._selisihCalc.toLocaleString('id')+'</span>';
     } else {
       overCell='<span style="color:#9CA3AF">-</span>';
     }
-    return'<tr style="border-bottom:1px solid #eee;'+(i%2===0?'background:#fafafa':'')+'"><td style="padding:7px 8px">'+(i+1)+'</td><td style="padding:7px 8px;font-weight:600">'+p.karyawan+'</td><td style="padding:7px 8px">'+p.menu+(p.qty>1?' ×'+p.qty:'')+'</td><td style="padding:7px 8px;color:#FF6B35;font-weight:700">Rp '+p.harga.toLocaleString('id')+'</td><td style="padding:7px 8px;color:#1DBF73;font-weight:700">Rp '+p.beban.toLocaleString('id')+'</td><td style="padding:7px 8px">'+overCell+'</td><td style="padding:7px 8px"><span style="background:'+(p.status==='Selesai'?'#E6F9F0':p.status==='Diproses'?'#E3F2FD':'#FFFBEB')+';color:'+(p.status==='Selesai'?'#166534':p.status==='Diproses'?'#1565C0':'#B45309')+';padding:2px 8px;border-radius:99px;font-size:11px;font-weight:700">'+p.status+'</span></td><td style="padding:7px 8px;color:#6B7280;font-size:11px">'+fmtDate(p.tanggal)+'</td></tr>';
+    return'<tr style="border-bottom:1px solid #eee;'+(i%2===0?'background:#fafafa':'')+'"><td style="padding:7px 8px">'+(i+1)+'</td><td style="padding:7px 8px;font-weight:600">'+p.karyawan+'</td><td style="padding:7px 8px">'+p.menu+(p.qty>1?' ×'+p.qty:'')+'</td><td style="padding:7px 8px;color:#FF6B35;font-weight:700">Rp '+p.harga.toLocaleString('id')+'</td><td style="padding:7px 8px;color:#1DBF73;font-weight:700">Rp '+(p._bebanCalc||0).toLocaleString('id')+'</td><td style="padding:7px 8px">'+overCell+'</td><td style="padding:7px 8px"><span style="background:'+(p.status==='Selesai'?'#E6F9F0':p.status==='Diproses'?'#E3F2FD':'#FFFBEB')+';color:'+(p.status==='Selesai'?'#166534':p.status==='Diproses'?'#1565C0':'#B45309')+';padding:2px 8px;border-radius:99px;font-size:11px;font-weight:700">'+p.status+'</span></td><td style="padding:7px 8px;color:#6B7280;font-size:11px">'+fmtDate(p.tanggal)+'</td></tr>';
   }).join('');
-  var html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Rekap MakanYuk</title></head><body style="font-family:Arial,sans-serif;margin:20px;color:#111">'
-    +'<div style="background:linear-gradient(135deg,#FF6B35,#FF8C42);padding:20px;border-radius:12px;margin-bottom:16px"><div style="font-size:24px;font-weight:900;color:#fff">🍱 MakanYuk — Rekap Makan Siang</div><div style="font-size:12px;color:rgba(255,255,255,.8);margin-top:4px">Dicetak: '+new Date().toLocaleString('id-ID')+'</div></div>'
+  var html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Rekap Kudapan Warmindo</title></head><body style="font-family:Arial,sans-serif;margin:20px;color:#111">'
+    +'<div style="background:linear-gradient(135deg,#FF6B35,#FF8C42);padding:20px;border-radius:12px;margin-bottom:16px"><div style="font-size:24px;font-weight:900;color:#fff">🍱 Kudapan Warmindo — Rekap Snack time kantor numeta!</div><div style="font-size:12px;color:rgba(255,255,255,.8);margin-top:4px">Dicetak: '+new Date().toLocaleString('id-ID')+'</div></div>'
     +'<div style="display:flex;gap:12px;margin-bottom:16px"><div style="flex:1;background:#E6F9F0;border-radius:8px;padding:12px"><div style="font-size:10px;color:#166534;font-weight:700">BEBAN PERUSAHAAN</div><div style="font-size:16px;font-weight:800;color:#1DBF73">Rp '+tB.toLocaleString('id')+'</div></div><div style="flex:1;background:'+(tO>0?'#FFEBEE':'#E6F9F0')+';border-radius:8px;padding:12px"><div style="font-size:10px;color:'+(tO>0?'#B71C1C':'#166534')+';font-weight:700">OVER BUDGET</div><div style="font-size:16px;font-weight:800;color:'+(tO>0?'#E53935':'#1DBF73')+'">Rp '+tO.toLocaleString('id')+'</div></div><div style="flex:1;background:#F7F7F8;border-radius:8px;padding:12px"><div style="font-size:10px;color:#9CA3AF;font-weight:700">TOTAL PESANAN</div><div style="font-size:16px;font-weight:800">'+list.length+'</div></div></div>'
     +'<table style="width:100%;border-collapse:collapse;font-size:12px"><thead><tr style="background:#FF6B35;color:#fff"><th style="padding:8px;text-align:left">No</th><th style="padding:8px;text-align:left">Karyawan</th><th style="padding:8px;text-align:left">Menu</th><th style="padding:8px;text-align:left">Harga</th><th style="padding:8px;text-align:left">Ditanggung</th><th style="padding:8px;text-align:left">Over</th><th style="padding:8px;text-align:left">Status</th><th style="padding:8px;text-align:left">Tanggal</th></tr></thead><tbody>'+rows+'</tbody></table>'
     +'<script>window.onload=function(){window.print();}<\/script></body></html>';
@@ -1751,11 +2248,11 @@ function hitungTotalOverKotor(kid){
     if(!byDate[p.tanggal])byDate[p.tanggal]=0;
     byDate[p.tanggal]+=p.harga;
   });
-  return Object.values(byDate).reduce(function(a,total){return a+Math.max(0,total-BUDGET);},0);
+  return Object.entries(byDate).reduce(function(a,e){return a+Math.max(0,e[1]-getBudgetForDate(e[0]));},0);
 }
 function hitungTotalOverKid(kid){
-  // Budget Rp 15.000 per hari KUMULATIF
-  // Tagihan aktif per hari = max(0, total_semua_pesanan - 15.000) - max(0, total_lunas - 15.000)
+  // Budget KUMULATIF per hari, mengikuti versi budget yang berlaku pada tanggal masing-masing hari
+  // Tagihan aktif per hari = max(0, total_semua_pesanan - budget_hari_itu) - max(0, total_lunas - budget_hari_itu)
   var byDate={};
   cache.pesanan.filter(function(p){
     return p.kid===kid&&(p.status==='Diproses'||p.status==='Selesai');
@@ -1764,10 +2261,12 @@ function hitungTotalOverKid(kid){
     byDate[p.tanggal].total+=p.harga;
     if(p._lunas)byDate[p.tanggal].lunas+=p.harga;
   });
-  return Object.values(byDate).reduce(function(a,d){
-    var overTotal=Math.max(0,d.total-BUDGET);      // total over hari itu
-    var overBayar=Math.max(0,d.lunas-BUDGET);      // over yang sudah dilunasi
-    return a+Math.max(0,overTotal-overBayar);       // sisa tagihan aktif
+  return Object.entries(byDate).reduce(function(a,e){
+    var tgl=e[0],d=e[1];
+    var b=getBudgetForDate(tgl);
+    var overTotal=Math.max(0,d.total-b);      // total over hari itu (budget sesuai tanggal itu)
+    var overBayar=Math.max(0,d.lunas-b);      // over yang sudah dilunasi
+    return a+Math.max(0,overTotal-overBayar);  // sisa tagihan aktif
   },0);
 }
 function getHariOverKid(kid){
@@ -1776,7 +2275,7 @@ function getHariOverKid(kid){
     if(!byDate[p.tanggal])byDate[p.tanggal]=0;
     byDate[p.tanggal]+=p.harga;
   });
-  return Object.entries(byDate).filter(function(e){return e[1]>BUDGET;}).map(function(e){return e[0];});
+  return Object.entries(byDate).filter(function(e){return e[1]>getBudgetForDate(e[0]);}).map(function(e){return e[0];});
 }
 function lunasTagihan(kid){
   var k=cache.karyawan.find(function(x){return x.id===kid;});
@@ -1799,8 +2298,9 @@ function eksekusiLunas(kid){
   // Hari yang masih punya sisa tagihan aktif
   var hariAktif=Object.entries(byDate).filter(function(e){
     var d=e[1];
-    var overTotal=Math.max(0,d.total-BUDGET);
-    var overBayar=Math.max(0,d.lunas-BUDGET);
+    var b=getBudgetForDate(e[0]);
+    var overTotal=Math.max(0,d.total-b);
+    var overBayar=Math.max(0,d.lunas-b);
     return overTotal-overBayar>0;
   });
 
@@ -1969,7 +2469,8 @@ function buildRincianOverPerHari(kid){
   var html=dates.map(function(tgl){
     var semua=byDate[tgl];
     var totalHari=semua.reduce(function(a,p){return a+p.harga;},0);
-    var overHari=Math.max(0,totalHari-BUDGET);
+    var budgetHari=getBudgetForDate(tgl);
+    var overHari=Math.max(0,totalHari-budgetHari);
     if(overHari===0)return'';
     adaOver=true;
     // Hari ini lunas jika semua pesanan Diproses/Selesai di hari ini punya _lunas=true
@@ -1993,12 +2494,12 @@ function buildRincianOverPerHari(kid){
       +'<div style="background:'+headerBg+';padding:8px 10px;display:flex;justify-content:space-between;align-items:center">'
       +'<div style="display:flex;align-items:center;flex-wrap:wrap;gap:2px"><div style="font-size:12px;font-weight:700;color:'+textColor+'">'+fmtDate(tgl)+'</div>'
       +lunasTag
-      +'<div style="font-size:10px;color:'+textColor+';opacity:.75;width:100%">Total '+rp(totalHari)+' − Budget '+rp(BUDGET)+'</div></div>'
+      +'<div style="font-size:10px;color:'+textColor+';opacity:.75;width:100%">Total '+rp(totalHari)+' − Budget '+rp(budgetHari)+'</div></div>'
       +'<div style="font-size:13px;font-weight:800;color:'+textColor+'">'+( sudahLunas?'<span style="text-decoration:line-through;opacity:.5">'+rp(overHari)+'</span> ✓':rp(overHari))+'</div>'
       +'</div>'
       +itemsHtml
       +'<div style="padding:6px 10px;background:'+( sudahLunas?'#e8f5e9':'#fff5f5')+';border-top:1px solid '+borderColor+';display:flex;justify-content:space-between">'
-      +'<div style="font-size:11px;color:var(--text3)">Ditanggung kantor: '+rp(BUDGET)+'</div>'
+      +'<div style="font-size:11px;color:var(--text3)">Ditanggung kantor: '+rp(budgetHari)+'</div>'
       +'<div style="font-size:11px;font-weight:800;color:'+textColor+'">'+( sudahLunas?'✓ Sudah dibayar: '+rp(overHari):'Tagihan: +'+rp(overHari))+'</div>'
       +'</div>'
       +'</div>';
@@ -2100,14 +2601,15 @@ function buildRincianHariPerKaryawan(pesananTgl){
 function downloadTagihanCSV(){
   var pesanan=cache.pesanan.slice();
   if(pesanan.length===0){showToast('Tidak ada data pesanan');return;}
-  // Sanitize
+  // Sanitize + filter data rusak
   pesanan=pesanan.map(function(p){
     return Object.assign({},p,{
       harga:Number(p.harga)||0,beban:Number(p.beban)||0,selisih:Number(p.selisih)||0,
       qty:Number(p.qty)||1,karyawan:p.karyawan||'-',menu:p.menu||'-',
       status:p.status||'-',waktu:p.waktu||'-',catatan:p.catatan||'',tanggal:p.tanggal||today()
     });
-  });
+  }).filter(function(p){return p.karyawan&&p.karyawan!=='-'&&!(p.harga===0&&p.menu==='-');});
+
   var byDate={};
   pesanan.forEach(function(p){if(!byDate[p.tanggal])byDate[p.tanggal]=[];byDate[p.tanggal].push(p);});
   var dates=Object.keys(byDate).sort();
@@ -2166,10 +2668,8 @@ function downloadTagihanPDF(){
     _tagihanByKidDate[key].total+=p.harga;
     if(p._lunas)_tagihanByKidDate[key].lunas+=p.harga;
   });
-  var totalBebanAll=Object.values(_tagihanByKidDate).reduce(function(a,d){return a+Math.min(d.total,BUDGET);},0);
-  var totalOverAll=Object.values(_tagihanByKidDate).reduce(function(a,d){
-    return a+Math.max(0,Math.max(0,d.total-BUDGET)-Math.max(0,d.lunas-BUDGET));
-  },0);
+  var totalBebanAll=pesanan.reduce(function(a,p){return a+p.beban;},0);
+  var totalOverAll=pesanan.reduce(function(a,p){return a+(p.selisih||0);},0);
 
   // Rincian per hari
   var hariBlocks=dates.map(function(tgl){
@@ -2183,8 +2683,9 @@ function downloadTagihanPDF(){
       _hariByKid[p.kid].total+=p.harga;
       if(p._lunas)_hariByKid[p.kid].lunas+=p.harga;
     });
+    var _budgetTgl=getBudgetForDate(tgl);
     var dtO=Object.values(_hariByKid).reduce(function(a,d){
-      return a+Math.max(0,Math.max(0,d.total-BUDGET)-Math.max(0,d.lunas-BUDGET));
+      return a+Math.max(0,Math.max(0,d.total-_budgetTgl)-Math.max(0,d.lunas-_budgetTgl));
     },0);
 
     var rows=items.map(function(p,i){
@@ -2236,7 +2737,8 @@ function downloadTagihanPDF(){
     });
     var _kidDate=Object.entries(_tagihanByKidDate);
     var hariOver=_kidDate.filter(function(e){
-      return e[0].indexOf(k.id+'|')===0&&Math.max(0,e[1].total-BUDGET)>0;
+      var tglE=e[0].slice(k.id.length+1);
+      return e[0].indexOf(k.id+'|')===0&&Math.max(0,e[1].total-getBudgetForDate(tglE))>0;
     }).length;
     return'<tr><td style="padding:7px 10px;font-weight:700">'+k.nama+'</td>'
       +'<td style="padding:7px 10px">'+hariOver+'× hari over budget</td>'
@@ -2244,10 +2746,10 @@ function downloadTagihanPDF(){
       +'<td style="padding:7px 10px"><span style="background:#FFEBEE;color:#E53935;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:700">Belum Lunas</span></td></tr>';
   }).filter(Boolean).join('');
 
-  var html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Rincian Tagihan MakanYuk</title>'
+  var html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Rincian Tagihan Kudapan Warmindo</title>'
     +'<style>body{font-family:Arial,sans-serif;margin:24px;color:#111}@media print{.no-print{display:none}}</style></head><body>'
     +'<div style="background:linear-gradient(135deg,#FF6B35,#FF8C42);padding:20px 24px;border-radius:12px;margin-bottom:20px">'
-    +'<div style="font-size:22px;font-weight:900;color:#fff">🍱 MakanYuk — Rincian Tagihan Harian</div>'
+    +'<div style="font-size:22px;font-weight:900;color:#fff">🍱 Kudapan Warmindo — Rincian Tagihan Harian</div>'
     +'<div style="font-size:12px;color:rgba(255,255,255,.8);margin-top:4px">Dicetak: '+new Date().toLocaleString('id-ID')+' · Total '+pesanan.length+' pesanan · '+dates.length+' hari</div>'
     +'</div>'
     +'<div style="display:flex;gap:12px;margin-bottom:20px">'
@@ -2427,8 +2929,449 @@ function importMenuExcel(){
 }
 
 // ─────────────────────────────────────────────────────────
-//  INIT
+//  CHAT / PESAN PESANAN
 // ─────────────────────────────────────────────────────────
+var _openChatPid=null; // pid chat yang sedang terbuka
+
+function getChatByPid(pid){
+  return Object.values(cache.chatPesan||{}).filter(function(m){return m.pid===pid;}).sort(function(a,b){return a.ts-b.ts;});
+}
+
+function getUnreadCountForPid(pid){
+  // Pesan yang belum dibaca (ditandai dgn readBy tidak mengandung currentRole)
+  if(!currentRole)return 0;
+  return getChatByPid(pid).filter(function(m){
+    return m.dari!==currentRole&&!(m.readBy&&m.readBy[currentRole]);
+  }).length;
+}
+
+function markChatRead(pid){
+  var msgs=getChatByPid(pid).filter(function(m){
+    return m.dari!==currentRole&&!(m.readBy&&m.readBy[currentRole]);
+  });
+  if(msgs.length===0)return;
+  var updates={};
+  msgs.forEach(function(m){
+    updates['chatPesan/'+m.id+'/readBy/'+currentRole]=true;
+  });
+  db.ref().update(updates);
+}
+
+function toggleChat(pid,kid,namaKaryawan){
+  var box=document.getElementById('chat-box-'+pid);
+  if(!box)return;
+  if(_openChatPid&&_openChatPid!==pid){
+    // Tutup yang lain
+    var oldBox=document.getElementById('chat-box-'+_openChatPid);
+    if(oldBox)oldBox.style.display='none';
+  }
+  var isOpen=box.style.display!=='none'&&box.style.display!=='';
+  if(isOpen){
+    box.style.display='none';
+    _openChatPid=null;
+  } else {
+    box.style.display='block';
+    _openChatPid=pid;
+    renderChatBox(pid,box,kid,namaKaryawan);
+    markChatRead(pid);
+    _refreshChatBadges();
+    // Fokus ke input
+    setTimeout(function(){var inp=document.getElementById('chat-inp-'+pid);if(inp)inp.focus();},100);
+  }
+}
+
+function renderChatBox(pid,boxEl,kid,namaKaryawan){
+  var msgs=getChatByPid(pid);
+  var msgsHtml=msgs.length===0
+    ?'<div class="chat-empty">💬 Belum ada pesan. Kirim pesan pertama!</div>'
+    :msgs.map(function(m){
+      var isMe=(m.dari===currentRole);
+      var label=m.dari==='warmindo'?'👨‍🍳 Warmindo':'👤 '+m.namaKaryawan;
+      return'<div class="chat-msg '+m.dari+'">'
+        +(isMe?'':'<div style="width:28px;height:28px;background:var(--orange-light);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:var(--orange);flex-shrink:0">'+(m.dari==='warmindo'?'W':inisial(m.namaKaryawan||'?'))+'</div>')
+        +'<div>'
+        +(!isMe?'<div class="chat-sender">'+label+'</div>':'')
+        +'<div class="chat-bubble">'+escHtml(m.teks)+'</div>'
+        +'<div style="text-align:'+(isMe?'right':'left')+';margin-top:2px"><span class="chat-time">'+m.waktu+'</span></div>'
+        +'</div>'
+        +(isMe?'<div style="width:28px;height:28px;background:'+(currentRole==='warmindo'?'#1a1a2e':'var(--orange)')+';border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0">'+(currentRole==='warmindo'?'W':inisial(currentUser.nama||'?'))+'</div>':'')
+        +'</div>';
+    }).join('');
+
+  // Simpan kid dan namaKaryawan di data attribute jika diberikan
+  if(kid)boxEl.dataset.kid=kid;
+  if(namaKaryawan)boxEl.dataset.nama=namaKaryawan;
+  var _kid=boxEl.dataset.kid||'';
+  var _nama=boxEl.dataset.nama||'';
+
+  boxEl.innerHTML='<div class="chat-box">'
+    +'<div style="font-size:11px;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">💬 Pesan Pesanan</div>'
+    +'<div id="chat-msgs-'+pid+'" style="max-height:200px;overflow-y:auto;padding-bottom:4px">'+msgsHtml+'</div>'
+    +'<div class="chat-input-row">'
+    +'<input type="text" id="chat-inp-'+pid+'" placeholder="Tulis pesan..." maxlength="200"'
+    +' onkeydown="if(event.key===\'Enter\')kirimChatMsg(\''+pid+'\',\''+_kid+'\',\''+escAttr(_nama)+'\')">'
+    +'<button class="chat-send-btn" onclick="kirimChatMsg(\''+pid+'\',\''+_kid+'\',\''+escAttr(_nama)+'\')">➤</button>'
+    +'</div></div>';
+
+  // Scroll ke bawah
+  setTimeout(function(){var el=document.getElementById('chat-msgs-'+pid);if(el)el.scrollTop=el.scrollHeight;},50);
+}
+
+function kirimChatMsg(pid,kid,namaKaryawan){
+  var inp=document.getElementById('chat-inp-'+pid);
+  if(!inp)return;
+  var teks=inp.value.trim();
+  if(!teks){showToast('Tulis pesan dulu');return;}
+  var mid='ch'+Date.now()+'_'+Math.random().toString(36).slice(2,5);
+  var msg={
+    id:mid,pid:pid,kid:kid||'',
+    namaKaryawan:namaKaryawan||(currentRole==='karyawan'?currentUser.nama:''),
+    dari:currentRole,
+    teks:teks,
+    waktu:nowTime(),
+    ts:Date.now(),
+    readBy:{}
+  };
+  msg.readBy[currentRole]=true;
+  inp.value='';
+  db.ref('chatPesan/'+mid).set(msg).then(function(){
+    showToast('✅ Pesan terkirim','ok');
+    if(_suaraAktif)playSound('pesanan_kirim');
+  }).catch(function(e){showToast('Gagal kirim: '+e.message);});
+}
+
+function _refreshChatBadges(){
+  // Update semua tombol chat yang ada di DOM
+  document.querySelectorAll('[data-chat-pid]').forEach(function(btn){
+    var pid=btn.dataset.chatPid;
+    var unread=getUnreadCountForPid(pid);
+    var isOpen=_openChatPid===pid;
+    btn.className='chat-toggle-btn'+(unread>0&&!isOpen?' has-unread':'');
+    btn.innerHTML='💬 '+(unread>0&&!isOpen?'Pesan ('+unread+')':'Chat');
+  });
+}
+
+function escHtml(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function escAttr(s){return(s||'').replace(/'/g,'&#39;').replace(/"/g,'&quot;');}
+
+function toggleChatKaryawan(pid){
+  var box=document.getElementById('k-chat-box-'+pid);
+  if(!box)return;
+  var isOpen=box.style.display!=='none'&&box.style.display!=='';
+  if(isOpen){
+    box.style.display='none';
+    if(_openChatPid===pid)_openChatPid=null;
+  } else {
+    box.style.display='block';
+    _openChatPid=pid;
+    // Render chat dalam konteks karyawan (background hijau gelap)
+    renderChatBoxKaryawan(pid,box);
+    markChatRead(pid);
+    _refreshChatBadgesKaryawan();
+    setTimeout(function(){var inp=document.getElementById('chat-inp-'+pid);if(inp)inp.focus();},100);
+  }
+}
+
+function renderChatBoxKaryawan(pid,boxEl){
+  var msgs=getChatByPid(pid);
+  var msgsHtml=msgs.length===0
+    ?'<div style="text-align:center;padding:14px 0;font-size:12px;color:rgba(255,255,255,.5);font-weight:600">💬 Belum ada pesan. Ketuk kirim untuk mulai!</div>'
+    :msgs.map(function(m){
+      var isMe=(m.dari==='karyawan');
+      return'<div style="display:flex;gap:6px;margin-bottom:6px;align-items:flex-end;'+(isMe?'flex-direction:row-reverse':'flex-direction:row')+'">'
+        +(!isMe?'<div style="width:26px;height:26px;background:rgba(255,255,255,.15);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0">W</div>':'')
+        +'<div>'
+        +(!isMe?'<div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.6);margin-bottom:2px">👨‍🍳 Warmindo</div>':'')
+        +'<div style="max-width:200px;padding:8px 11px;border-radius:14px;font-size:13px;line-height:1.5;word-break:break-word;'
+        +(isMe?'background:rgba(255,255,255,.25);color:#fff;border-bottom-right-radius:4px':'background:rgba(255,255,255,.12);color:#fff;border-bottom-left-radius:4px;border:1px solid rgba(255,255,255,.2)')+'">'+escHtml(m.teks)+'</div>'
+        +'<div style="margin-top:2px;text-align:'+(isMe?'right':'left')+';font-size:10px;color:rgba(255,255,255,.45)">'+m.waktu+'</div>'
+        +'</div>'
+        +(isMe?'<div style="width:26px;height:26px;background:rgba(255,255,255,.25);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0">'+inisial(currentUser.nama)+'</div>':'')
+        +'</div>';
+    }).join('');
+
+  boxEl.innerHTML='<div style="background:rgba(0,0,0,.2);border-radius:12px;padding:10px;border:1px solid rgba(255,255,255,.15)">'
+    +'<div style="font-size:10px;font-weight:800;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">💬 Pesan ke Warmindo</div>'
+    +'<div id="chat-msgs-'+pid+'" style="max-height:160px;overflow-y:auto;padding-bottom:4px">'+msgsHtml+'</div>'
+    +'<div style="display:flex;gap:6px;margin-top:8px;align-items:center">'
+    +'<input type="text" id="chat-inp-'+pid+'" placeholder="Tulis pesan..." maxlength="200"'
+    +' style="flex:1;padding:9px 13px;font-size:13px;border:1.5px solid rgba(255,255,255,.3);border-radius:99px;background:rgba(255,255,255,.15);color:#fff;font-family:inherit;outline:none"'
+    +' onkeydown="if(event.key===\'Enter\')kirimChatMsg(\''+pid+'\',\''+currentUser.id+'\',\''+escAttr(currentUser.nama)+'\')">'
+    +'<button style="width:36px;height:36px;border-radius:50%;border:none;background:rgba(255,255,255,.9);color:var(--orange);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0" onclick="kirimChatMsg(\''+pid+'\',\''+currentUser.id+'\',\''+escAttr(currentUser.nama)+'\')">➤</button>'
+    +'</div></div>';
+  setTimeout(function(){var el=document.getElementById('chat-msgs-'+pid);if(el)el.scrollTop=el.scrollHeight;},50);
+}
+
+function _refreshChatBadgesKaryawan(){
+  document.querySelectorAll('[data-chat-pid]').forEach(function(btn){
+    var pid=btn.dataset.chatPid;
+    var unread=getUnreadCountForPid(pid);
+    var isOpen=_openChatPid===pid;
+    btn.className='chat-toggle-btn'+(unread>0&&!isOpen?' has-unread':'');
+    btn.innerHTML='💬 '+(unread>0&&!isOpen?'Pesan ('+unread+')':'Chat');
+  });
+}
+
+// ─────────────────────────────────────────────────────────
+//  PEMBAYARAN — QRIS & TRANSFER BANK
+// ─────────────────────────────────────────────────────────
+var _bayarKid=null;
+
+function _renderPaymentInfo(ps){
+  // Merge dengan hardcoded sebagai fallback
+  var data={
+    qrisUrl:(ps&&ps.qrisUrl)||HARDCODED_PAYMENT.qrisUrl||'',
+    bankNama:(ps&&ps.bankNama)||HARDCODED_PAYMENT.bankNama||'',
+    bankNorek:(ps&&ps.bankNorek)||HARDCODED_PAYMENT.bankNorek||'',
+    bankAtasNama:(ps&&ps.bankAtasNama)||HARDCODED_PAYMENT.bankAtasNama||''
+  };
+  // Render QRIS — pakai DOM API agar tidak ada string escaping bocor
+  var qrisWrap=document.getElementById('qris-img-wrap');
+  if(qrisWrap){
+    qrisWrap.innerHTML='';
+    if(data.qrisUrl){
+      qrisWrap.style.padding='8px';
+      var imgEl=document.createElement('img');
+      imgEl.src=data.qrisUrl;
+      imgEl.alt='QR Code QRIS';
+      imgEl.style.cssText='width:100%;height:auto;display:block;border-radius:8px';
+      var errDiv=document.createElement('div');
+      errDiv.style.cssText='padding:20px;text-align:center;font-size:12px;color:var(--text3);display:none';
+      errDiv.innerHTML='<div style="font-size:32px;margin-bottom:8px">⚠️</div><div style="font-weight:700;color:var(--red)">Gambar tidak bisa dimuat</div><div style="margin-top:4px">Minta admin upload ulang gambar QRIS</div>';
+      imgEl.onerror=function(){imgEl.style.display='none';errDiv.style.display='block';};
+      var caption=document.createElement('div');
+      caption.style.cssText='font-size:12px;font-weight:600;color:var(--text3);margin-top:10px;text-align:center;padding-bottom:4px';
+      caption.textContent='📱 Scan QR untuk bayar';
+      qrisWrap.appendChild(imgEl);
+      qrisWrap.appendChild(errDiv);
+      qrisWrap.appendChild(caption);
+    } else {
+      qrisWrap.innerHTML='<div style="padding:20px 0;text-align:center">'
+        +'<div style="font-size:40px;margin-bottom:8px">📱</div>'
+        +'<div style="font-size:13px;font-weight:700;color:var(--text2)">QRIS belum diatur</div>'
+        +'<div style="font-size:11px;color:var(--text3);margin-top:6px;line-height:1.6">Admin bisa atur QRIS di<br><strong>Tab Tagihan → ⚙️ Atur Rekening/QRIS</strong></div>'
+        +'<div style="font-size:11px;color:var(--text3);margin-top:6px">Sementara gunakan Transfer Bank</div>'
+        +'</div>';
+    }
+  }
+  // Render Transfer Bank
+  var tfWrap=document.getElementById('tf-info-wrap');
+  if(tfWrap){
+    if(data.bankNorek){
+      tfWrap.innerHTML='<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">'
+        +'<div style="font-size:28px">🏦</div>'
+        +'<div><div style="font-size:16px;font-weight:800;color:var(--text)">'+(data.bankNama||'Bank')+'</div>'
+        +'<div style="font-size:11px;color:var(--text3);font-weight:600">'+(data.bankAtasNama||'')+'</div></div></div>'
+        +'<div style="background:var(--orange-light);border-radius:10px;padding:14px;text-align:center">'
+        +'<div style="font-size:11px;color:var(--text3);font-weight:700;margin-bottom:6px;letter-spacing:.06em">NOMOR REKENING</div>'
+        +'<div style="font-size:24px;font-weight:800;color:var(--orange);letter-spacing:3px">'+data.bankNorek+'</div>'
+        +'<div style="font-size:12px;color:var(--text2);font-weight:600;margin-top:4px">a.n. '+(data.bankAtasNama||data.bankNama||'-')+'</div>'
+        +'<button onclick="navigator.clipboard.writeText(\''+data.bankNorek+'\').then(function(){showToast(\'✅ Nomor disalin\',\'ok\');})" '
+        +'style="margin-top:10px;background:var(--orange);color:#fff;border:none;font-size:12px;font-weight:700;padding:8px 20px;border-radius:99px;cursor:pointer;font-family:inherit">📋 Salin Nomor Rekening</button>'
+        +'</div>';
+    } else {
+      tfWrap.innerHTML='<div style="text-align:center;padding:8px"><div style="font-size:32px;margin-bottom:8px">🏦</div><div style="font-size:13px;color:var(--text3);font-weight:600">Info rekening belum diatur admin</div></div>';
+    }
+  }
+}
+
+function openBayarModal(tab){
+  _bayarKid=currentUser.id;
+  var jumlah=hitungTotalOverKid(_bayarKid);
+  document.getElementById('bayar-nama-label').textContent=currentUser.nama;
+  document.getElementById('bayar-jumlah-label').textContent=rp(jumlah);
+  document.getElementById('bayar-nominal').value=jumlah;
+  document.getElementById('bayar-catatan').value='';
+  switchBayarTab(tab||'qris');
+  document.getElementById('modal-bayar').classList.add('show');
+  // Render setelah modal tampil (DOM sudah siap)
+  setTimeout(function(){
+    _renderPaymentInfo(null);
+    if(db){
+      db.ref('paymentSettings').once('value').then(function(s){
+        _renderPaymentInfo(s.exists()?s.val():null);
+      }).catch(function(){});
+    }
+  },50);
+}
+
+function switchBayarTab(tab){
+  document.getElementById('panel-qris').style.display=tab==='qris'?'block':'none';
+  document.getElementById('panel-tf').style.display=tab==='tf'?'block':'none';
+  var activeStyle='flex:1;padding:10px;border-radius:10px;background:var(--orange);color:#fff;font-size:13px;font-weight:700;text-align:center;cursor:pointer';
+  var inactiveStyle='flex:1;padding:10px;border-radius:10px;background:var(--bg);color:var(--text3);border:1.5px solid var(--border);font-size:13px;font-weight:700;text-align:center;cursor:pointer';
+  document.getElementById('tab-qris').style.cssText=tab==='qris'?activeStyle:inactiveStyle;
+  document.getElementById('tab-tf').style.cssText=tab==='tf'?activeStyle:inactiveStyle;
+}
+
+function kirimBuktiPembayaran(){
+  var nominal=parseInt(document.getElementById('bayar-nominal').value)||0;
+  var catatan=document.getElementById('bayar-catatan').value.trim();
+  var jumlah=hitungTotalOverKid(_bayarKid);
+  if(nominal<=0){showToast('Isi nominal yang dibayar');return;}
+  if(nominal>jumlah*1.1){showToast('Nominal melebihi tagihan');return;}
+
+  // Simpan konfirmasi pembayaran ke Firebase
+  var konfId='konf'+Date.now()+'_'+Math.random().toString(36).slice(2,5);
+  var metode=document.getElementById('panel-qris').style.display!=='none'?'QRIS':'Transfer Bank';
+  var data={
+    id:konfId,
+    kid:_bayarKid,
+    namaKaryawan:currentUser.nama,
+    jumlahTagihan:jumlah,
+    nominalBayar:nominal,
+    metode:metode,
+    catatan:catatan,
+    waktu:nowTime(),
+    tanggal:today(),
+    status:'Menunggu Konfirmasi',
+    ts:Date.now()
+  };
+  db.ref('konfirmasiBayar/'+konfId).set(data).then(function(){
+    showToast('✅ Konfirmasi terkirim ke admin!','ok');
+    closeModal('modal-bayar');
+    // Notifikasi ke admin via Firebase flag
+    db.ref('notifAdmin/bayar_'+konfId).set({kid:_bayarKid,nama:currentUser.nama,nominal:nominal,metode:metode,ts:Date.now()});
+  }).catch(function(e){showToast('Gagal kirim: '+e.message);});
+}
+
+// ─── ADMIN: pengaturan & konfirmasi ───
+function openPaymentSettings(){
+  document.getElementById('ps-bank-nama').value=HARDCODED_PAYMENT.bankNama||'';
+  document.getElementById('ps-bank-norek').value=HARDCODED_PAYMENT.bankNorek||'';
+  document.getElementById('ps-bank-atasnama').value=HARDCODED_PAYMENT.bankAtasNama||'';
+  _updateQrisPreview(HARDCODED_PAYMENT.qrisUrl||'');
+  document.getElementById('modal-payment-settings').classList.add('show');
+  if(db){
+    db.ref('paymentSettings').once('value').then(function(s){
+      if(!s.exists())return;
+      var ps=s.val();
+      if(ps.qrisUrl)_updateQrisPreview(ps.qrisUrl);
+      if(ps.bankNama)document.getElementById('ps-bank-nama').value=ps.bankNama;
+      if(ps.bankNorek)document.getElementById('ps-bank-norek').value=ps.bankNorek;
+      if(ps.bankAtasNama)document.getElementById('ps-bank-atasnama').value=ps.bankAtasNama;
+    });
+  }
+}
+function _updateQrisPreview(url){
+  document.getElementById('ps-qris-url').value=url||'';
+  var preview=document.getElementById('ps-qris-preview');
+  var uploadArea=document.getElementById('ps-qris-upload-area');
+  var img=document.getElementById('ps-qris-img');
+  if(url){
+    img.src=url;
+    preview.style.display='block';
+    uploadArea.style.display='none';
+  } else {
+    preview.style.display='none';
+    uploadArea.style.display='block';
+  }
+}
+function piliGambarQris(input){
+  var file=input.files&&input.files[0];
+  if(!file)return;
+  if(file.size>3*1024*1024){showToast('Ukuran gambar max 3MB. Kompres dulu ya.');return;}
+  var reader=new FileReader();
+  reader.onload=function(e){
+    _updateQrisPreview(e.target.result);
+    showToast('✅ Gambar dipilih, klik Simpan untuk menyimpan','ok');
+  };
+  reader.readAsDataURL(file);
+}
+function hapusQrisGambar(){
+  _updateQrisPreview('');
+  document.getElementById('ps-qris-file').value='';
+  showToast('Gambar QRIS dihapus');
+}
+function simpanPaymentSettings(){
+  var qrisUrl=document.getElementById('ps-qris-url').value||'';
+  var ps={
+    qrisUrl:qrisUrl,
+    bankNama:document.getElementById('ps-bank-nama').value.trim(),
+    bankNorek:document.getElementById('ps-bank-norek').value.trim(),
+    bankAtasNama:document.getElementById('ps-bank-atasnama').value.trim()
+  };
+  HARDCODED_PAYMENT.qrisUrl=qrisUrl;
+  HARDCODED_PAYMENT.bankNama=ps.bankNama;
+  HARDCODED_PAYMENT.bankNorek=ps.bankNorek;
+  HARDCODED_PAYMENT.bankAtasNama=ps.bankAtasNama;
+
+  var btnSimpan=document.querySelector('#modal-payment-settings .btn.primary');
+  if(btnSimpan){btnSimpan.disabled=true;btnSimpan.textContent='Menyimpan...';}
+
+  if(db){
+    db.ref('paymentSettings').set(ps).then(function(){
+      if(btnSimpan){btnSimpan.disabled=false;btnSimpan.textContent='💾 Simpan Pengaturan';}
+      showToast('✅ Pengaturan pembayaran disimpan','ok');
+      closeModal('modal-payment-settings');
+      if(activeAdminTab==='tagihan')renderAdminTab('tagihan');
+    }).catch(function(e){
+      if(btnSimpan){btnSimpan.disabled=false;btnSimpan.textContent='💾 Simpan Pengaturan';}
+      showToast('Gagal simpan: '+e.message);
+    });
+  } else {
+    if(btnSimpan){btnSimpan.disabled=false;btnSimpan.textContent='💾 Simpan Pengaturan';}
+    showToast('✅ Tersimpan (offline mode)','ok');
+    closeModal('modal-payment-settings');
+  }
+}
+
+function renderKonfirmasiBayar(){
+  return new Promise(function(resolve){
+    if(!db){resolve('');return;}
+    db.ref('konfirmasiBayar').orderByChild('status').equalTo('Menunggu Konfirmasi').once('value').then(function(s){
+      if(!s.exists()||!s.val()){resolve('');return;}
+      var list=Object.values(s.val()).filter(function(k){return k&&k.id;}).sort(function(a,b){return(b.ts||0)-(a.ts||0);});
+      if(list.length===0){resolve('');return;}
+      var html='<div class="section-label">🔔 Konfirmasi Pembayaran ('+list.length+')</div>';
+      html+=list.map(function(k){
+        return'<div style="background:#fff;border-radius:var(--radius);padding:14px;margin-bottom:10px;box-shadow:var(--shadow);border-left:4px solid var(--orange)">'
+          +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">'
+          +'<div><div style="font-size:14px;font-weight:800">'+( k.namaKaryawan||'-')+'</div>'
+          +'<div style="font-size:11px;color:var(--text3);margin-top:2px">'+(k.tanggal||'')+' · '+(k.waktu||'')+' · '+(k.metode||'')+'</div></div>'
+          +'<div style="text-align:right"><div style="font-size:15px;font-weight:800;color:var(--green)">'+rp(k.nominalBayar||0)+'</div>'
+          +'<div style="font-size:11px;color:var(--text3)">dari '+rp(k.jumlahTagihan||0)+'</div></div></div>'
+          +(k.catatan?'<div style="font-size:12px;color:var(--text2);background:var(--bg);padding:7px 10px;border-radius:8px;margin-bottom:10px">📝 '+k.catatan+'</div>':'')
+          +'<div style="display:flex;gap:8px">'
+          +'<button onclick="konfirmasiLunasAdmin(\''+k.id+'\',\''+k.kid+'\','+( k.nominalBayar||0)+')" style="flex:1;background:var(--green);color:#fff;border:none;font-size:12px;font-weight:700;padding:9px;border-radius:8px;cursor:pointer;font-family:inherit">✅ Konfirmasi Lunas</button>'
+          +'<button onclick="tolakKonfirmasi(\''+k.id+'\')" style="flex:1;background:var(--red-light);color:var(--red);border:1.5px solid #fcc;font-size:12px;font-weight:700;padding:9px;border-radius:8px;cursor:pointer;font-family:inherit">❌ Tolak</button>'
+          +'</div></div>';
+      }).join('');
+      resolve(html);
+    }).catch(function(e){
+      console.warn('[konfirmasi]',e);
+      resolve('');
+    });
+  });
+}
+
+function konfirmasiLunasAdmin(konfId,kid,nominalBayar){
+  if(!confirm('Konfirmasi pembayaran ini dan tandai lunas?'))return;
+  // Tandai konfirmasi selesai
+  db.ref('konfirmasiBayar/'+konfId+'/status').set('Dikonfirmasi').then(function(){
+    // Eksekusi lunas seperti biasa
+    eksekusiLunas(kid);
+    showToast('✅ Pembayaran dikonfirmasi & tagihan dilunasi','ok');
+    renderAdminTab('tagihan');
+  });
+}
+
+function tolakKonfirmasi(konfId){
+  if(!confirm('Tolak konfirmasi pembayaran ini?'))return;
+  db.ref('konfirmasiBayar/'+konfId+'/status').set('Ditolak').then(function(){
+    showToast('Konfirmasi ditolak','warn');
+    renderAdminTab('tagihan');
+  });
+}
+// ─────────────────────────────────────────────────────────
+//  HARDCODED PAYMENT & INIT
+// ─────────────────────────────────────────────────────────
+var HARDCODED_PAYMENT={
+  qrisUrl:'https://i.ibb.co/NnfCBtgB/Qris.jpg',
+  bankNama:'BRI',
+  bankNorek:'0462582011',
+  bankAtasNama:'Warmindo'
+};
 (function init(){
   var HARDCODED_CFG={
     apiKey:'AIzaSyAvQvzdNognxYTz_eU6dTJUa5WSy-_zAkk',
@@ -2440,6 +3383,15 @@ function importMenuExcel(){
   localStorage.setItem('fb_config',JSON.stringify(HARDCODED_CFG));
   Object.keys(HARDCODED_CFG).forEach(function(k){var el=document.getElementById('cfg-'+k);if(el)el.value=HARDCODED_CFG[k];});
   connectFirebase(HARDCODED_CFG);
+  // Seed payment settings ke Firebase jika belum ada
+  setTimeout(function(){
+    if(!db)return;
+    db.ref('paymentSettings').once('value').then(function(s){
+      if(!s.exists()||!s.val().bankNorek){
+        db.ref('paymentSettings').set(HARDCODED_PAYMENT);
+      }
+    });
+  },3000);
   if('Notification'in window&&Notification.permission==='granted')notifPermission=true;
 })();
 </script>
