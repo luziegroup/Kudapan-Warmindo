@@ -341,7 +341,14 @@ input:focus,select:focus,textarea:focus{border-color:var(--orange);box-shadow:0 
     </div>
     <div id="w-stat-row" style="display:flex;gap:10px"></div>
   </div>
-  <div style="padding:12px 16px 0" id="w-content"><div class="loading-wrap"><div class="spinner"></div>Memuat...</div></div>
+  <div style="padding:12px 16px 0">
+    <div class="tab-bar">
+      <div class="tab active" onclick="warmindoTab('pesanan')">Pesanan</div>
+      <div class="tab" onclick="warmindoTab('menu')">Menu</div>
+      <div class="tab" onclick="warmindoTab('jadwal')">Jadwal</div>
+    </div>
+    <div id="w-content"><div class="loading-wrap"><div class="spinner"></div>Memuat...</div></div>
+  </div>
 </div>
 
 <!-- ADMIN -->
@@ -359,14 +366,10 @@ input:focus,select:focus,textarea:focus{border-color:var(--orange);box-shadow:0 
     <div class="tab-bar">
       <div class="tab active" onclick="adminTab('rekap')">Rekap</div>
       <div class="tab" onclick="adminTab('tagihan')">Tagihan</div>
-      <div class="tab" onclick="adminTab('jadwal')">Jadwal</div>
-      <div class="tab" onclick="adminTab('menu')">Menu</div>
       <div class="tab" onclick="adminTab('akun')">Akun</div>
     </div>
     <div id="at-rekap" class="fade-in"></div>
     <div id="at-tagihan" style="display:none"></div>
-    <div id="at-jadwal" style="display:none"></div>
-    <div id="at-menu" style="display:none"></div>
     <div id="at-akun" style="display:none"></div>
   </div>
 </div>
@@ -482,7 +485,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--orange);box-shadow:0 
   <div class="modal">
     <div class="modal-handle"></div>
     <div style="font-size:18px;font-weight:800;margin-bottom:16px">🔑 Ganti PIN</div>
-    <div class="fg"><label>Karyawan</label><input type="text" id="gpin-nama" readonly style="background:var(--bg)"></div>
+    <div class="fg"><label id="gpin-label">Karyawan</label><input type="text" id="gpin-nama" readonly style="background:var(--bg)"></div>
     <div class="fg"><label>PIN Baru (4 digit)</label><input type="password" id="gpin-baru" maxlength="4" placeholder="••••" inputmode="numeric"></div>
     <div class="fg"><label>Konfirmasi PIN</label><input type="password" id="gpin-konfirm" maxlength="4" placeholder="••••" inputmode="numeric"></div>
     <div id="gpin-err" style="color:var(--red);font-size:13px;font-weight:600;margin-bottom:10px;display:none;background:var(--red-light);padding:10px;border-radius:8px"></div>
@@ -576,7 +579,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--orange);box-shadow:0 
 // walau kebijakan budget berubah di kemudian hari.
 var BUDGET_HISTORY=[
   {mulai:'2000-01-01', nilai:15000}, // budget lama, berlaku untuk semua histori sebelum cutover di bawah
-  {mulai:'2026-08-01', nilai:7500}   // ⬅ EFEKTIF 01 Agustus 2026: budget turun jadi Rp 7.500/hari
+  {mulai:'2026-07-28', nilai:7500}   // ⬅ EFEKTIF 28 Juli 2026: budget turun jadi Rp 7.500/hari
 ];
 function getBudgetForDate(tgl){
   // tgl format 'YYYY-MM-DD'. Cari nilai budget yang berlaku pada tanggal tsb.
@@ -607,7 +610,14 @@ function getBudgetChangeBanner(){
   return'';
 }
 var ADMIN_PIN = '0000';
-var WARMINDO_PIN = '9999';
+var DEFAULT_WARMINDO = [
+  {id:'w1',nama:'Warmindo Utama',pin:'9999'} // migrasi dari sistem 1-vendor lama (PIN 9999 tetap sama)
+];
+// Cek apakah suatu PIN sudah dipakai admin ATAU salah satu vendor warmindo
+function isPinTaken(pin,excludeWid){
+  if(pin===ADMIN_PIN)return true;
+  return(cache.warmindoAccounts||[]).some(function(w){return w.pin===pin&&w.id!==excludeWid;});
+}
 var DAYS_ID = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
 var DEFAULT_KARYAWAN = [
   {id:'k1',nama:'Budi Santoso',pin:'1111'},{id:'k2',nama:'Siti Rahayu',pin:'2222'},
@@ -615,9 +625,9 @@ var DEFAULT_KARYAWAN = [
   {id:'k5',nama:'Rizky Firmansyah',pin:'5555'},
 ];
 var DEFAULT_MENU = [
-  {id:'m1',nama:'Nasi Goreng',harga:12000,kategori:'Nasi'},{id:'m2',nama:'Mie Goreng',harga:11000,kategori:'Mie'},
-  {id:'m3',nama:'Nasi Kuning',harga:13000,kategori:'Nasi'},{id:'m4',nama:'Nasi Pecel',harga:14000,kategori:'Nasi'},
-  {id:'m5',nama:'Soto Ayam + Nasi',harga:16000,kategori:'Sup'},{id:'m6',nama:'Gado-gado',harga:15000,kategori:'Sayur'},
+  {id:'m1',nama:'Nasi Goreng',harga:12000,kategori:'Nasi',warmindoId:'w1'},{id:'m2',nama:'Mie Goreng',harga:11000,kategori:'Mie',warmindoId:'w1'},
+  {id:'m3',nama:'Nasi Kuning',harga:13000,kategori:'Nasi',warmindoId:'w1'},{id:'m4',nama:'Nasi Pecel',harga:14000,kategori:'Nasi',warmindoId:'w1'},
+  {id:'m5',nama:'Soto Ayam + Nasi',harga:16000,kategori:'Sup',warmindoId:'w1'},{id:'m6',nama:'Gado-gado',harga:15000,kategori:'Sayur',warmindoId:'w1'},
 ];
 var KATEGORI_LIST = ['Semua','Nasi','Mie','Sup','Lauk','Sayur','Minuman','Snack','Lainnya'];
 var EMOJI_MAP = {'Nasi':'🍚','Mie':'🍜','Soto':'🍲','Gado':'🥙','Pecel':'🥗','Ayam':'🍗','Bakso':'🍡','Sate':'🍢','Ikan':'🐟','Tempe':'🫘','Tahu':'🧊','Sup':'🍲','Lauk':'🍖','Sayur':'🥬','Minum':'🥤','Snack':'🍘'};
@@ -634,13 +644,14 @@ var filterSearchKaryawan='';
 //  STATE
 // ─────────────────────────────────────────────────────────
 var db=null,listeners=[],pinInput='',currentUser=null,currentRole=null;
-var editPinKid=null,activeAdminTab='rekap',filterTanggal='hari';
+var selectedWarmindoId=null; // vendor warmindo yang sedang dipilih karyawan untuk sesi pesan ini
+var editPinKid=null,editPinType='karyawan',activeAdminTab='rekap',filterTanggal='hari';
 var filterNama='semua',filterDariTgl='',filterSampaiTgl='';
 var keranjang={},ratingPid=null,ratingMenuNama='',ratingValue=0;
 var selectedJadwalDay=new Date().getDay(),notifPermission=false;
 // showPesananExpanded: apakah ringkasan pesanan hari ini ditampilkan melebar
 var showPesananExpanded = true;
-var cache={karyawan:[],menu:[],pesanan:[],tagihan:{},jadwal:{},jamPesan:{buka:'07:00',tutup:'10:00',aktif:1},rating:{},lunasHistory:{},lunasBayar:{},chatPesan:{}};
+var cache={karyawan:[],menu:[],pesanan:[],tagihan:{},jadwal:{},jamPesan:{},rating:{},lunasHistory:{},lunasBayar:{},chatPesan:{},warmindoAccounts:[]};
 
 // ─────────────────────────────────────────────────────────
 //  CONFIG
@@ -664,16 +675,43 @@ function connectFirebase(cfg){
     db.ref('.info/connected').on('value',function(){if(!_done){_done=true;clearTimeout(_to);setupInitialData();}});
   }catch(err){showScreen('s-setup');var el=document.getElementById('cfg-err');if(el){el.textContent='Error: '+err.message;el.style.display='block';}}
 }
+// Migrasi untuk instalasi LAMA (single-vendor) yang sudah punya data di Firebase:
+// - Pastikan minimal 1 akun warmindo terdaftar
+// - jamPesan lama (flat {buka,tutup,aktif}) dipindah ke jamPesan/w1
+// - jadwal lama (flat {0:{...},1:{...}}) dipindah ke jadwal/w1/{hari}
+// Aman dijalankan berkali-kali (idempotent) — hanya menulis jika format lama terdeteksi.
+function migrateToMultiWarmindo(){
+  db.ref('warmindoAccounts').once('value').then(function(s){
+    if(!s.exists()||!s.val()){
+      var b={};DEFAULT_WARMINDO.forEach(function(w){b['warmindoAccounts/'+w.id]=w;});
+      db.ref().update(b);
+    }
+  });
+  db.ref('jamPesan').once('value').then(function(s){
+    var v=s.val();
+    if(v&&v.buka&&!v.w1){
+      db.ref('jamPesan').set({w1:{buka:v.buka,tutup:v.tutup,aktif:v.aktif}});
+    }
+  });
+  db.ref('jadwal').once('value').then(function(s){
+    var v=s.val();
+    if(v&&(v['0']||v['1']||v['2']||v['3']||v['4']||v['5']||v['6'])&&!v.w1){
+      db.ref('jadwal').set({w1:v});
+    }
+  });
+}
 function setupInitialData(){
   db.ref('karyawan').once('value').then(function(snap){
     if(!snap.exists()){
       var b={};
       DEFAULT_KARYAWAN.forEach(function(k){b['karyawan/'+k.id]=k;});
       DEFAULT_MENU.forEach(function(m){b['menu/'+m.id]=m;});
-      b['jamPesan']={buka:'07:00',tutup:'10:00',aktif:1};
+      DEFAULT_WARMINDO.forEach(function(w){b['warmindoAccounts/'+w.id]=w;});
+      b['jamPesan/w1']={buka:'07:00',tutup:'10:00',aktif:1};
       return db.ref().update(b);
     }
   }).then(function(){
+    migrateToMultiWarmindo();
     startListeners();
     document.getElementById('a-date-header').innerHTML='<span class="rt-dot" style="background:#fff"></span>'+fmtDate(today());
     // Restore session — tunggu data karyawan Firebase benar-benar masuk (bukan timeout buta)
@@ -719,13 +757,14 @@ function setupInitialData(){
 // ─────────────────────────────────────────────────────────
 function startListeners(){
   clearListeners();
-  var refs={karyawan:db.ref('karyawan'),menu:db.ref('menu'),pesanan:db.ref('pesanan'),tagihan:db.ref('tagihan'),jadwal:db.ref('jadwal'),jamPesan:db.ref('jamPesan'),rating:db.ref('rating'),lunasBayar:db.ref('lunasBayar'),lunasHistory:db.ref('lunasHistory'),chatPesan:db.ref('chatPesan')};
+  var refs={karyawan:db.ref('karyawan'),menu:db.ref('menu'),pesanan:db.ref('pesanan'),tagihan:db.ref('tagihan'),jadwal:db.ref('jadwal'),jamPesan:db.ref('jamPesan'),rating:db.ref('rating'),lunasBayar:db.ref('lunasBayar'),lunasHistory:db.ref('lunasHistory'),chatPesan:db.ref('chatPesan'),warmindoAccounts:db.ref('warmindoAccounts')};
   var prevCount=cache.pesanan.length;
   var h1=refs.karyawan.on('value',function(s){cache.karyawan=s.exists()?Object.values(s.val()):[];renderLoginNama();if(currentRole==='admin'&&activeAdminTab==='akun')renderAdminTab('akun');});
-  var h2=refs.menu.on('value',function(s){cache.menu=s.exists()?Object.values(s.val()):[];if(currentRole==='admin'&&activeAdminTab==='menu')renderAdminTab('menu');if(currentRole==='karyawan')renderKaryawan();});
+  var h1b=refs.warmindoAccounts.on('value',function(s){cache.warmindoAccounts=s.exists()?Object.values(s.val()):[];if(currentRole==='admin'&&activeAdminTab==='akun')renderAdminTab('akun');if(currentRole==='karyawan'&&!selectedWarmindoId)renderKaryawan();});
+  var h2=refs.menu.on('value',function(s){cache.menu=s.exists()?Object.values(s.val()):[];if(currentRole==='karyawan')renderKaryawan();if(currentRole==='warmindo')renderWarmindo();});
   var h3=refs.pesanan.on('value',function(s){
     var newP=s.exists()?Object.values(s.val()):[];
-    if(currentRole==='warmindo'&&newP.length>prevCount){var n=newP.filter(function(p){return p.tanggal===today()&&p.status==='Menunggu';});if(n.length>0){sendBrowserNotif('🍱 Pesanan Baru!',n[n.length-1].karyawan+' memesan '+n[n.length-1].menu);if(_suaraAktif)playSound('pesanan_baru');}}
+    if(currentRole==='warmindo'&&newP.length>prevCount){var n=newP.filter(function(p){return(p.warmindoId||'w1')===currentUser.id&&p.tanggal===today()&&p.status==='Menunggu';});if(n.length>0){sendBrowserNotif('🍱 Pesanan Baru!',n[n.length-1].karyawan+' memesan '+n[n.length-1].menu);if(_suaraAktif)playSound('pesanan_baru');}}
     if(currentRole==='karyawan'&&currentUser){newP.forEach(function(np){var old=cache.pesanan.find(function(p){return p.id===np.id;});if(old&&old.status!==np.status&&np.kid===currentUser.id){sendBrowserNotif('🍽️ Status Pesanan',np.menu+' → '+np.status);if(_suaraAktif)playSound('status_update');}});}
     prevCount=newP.length;cache.pesanan=newP;
     if(currentRole==='warmindo')renderWarmindo();
@@ -733,9 +772,9 @@ function startListeners(){
     if(currentRole==='karyawan')renderKaryawan();
   });
   var h4=refs.tagihan.on('value',function(s){cache.tagihan=s.exists()?(s.val()||{}):{};if(currentRole==='admin'&&activeAdminTab==='tagihan')renderAdminTab('tagihan');if(currentRole==='karyawan')renderKaryawan();});
-  var h5=refs.jadwal.on('value',function(s){cache.jadwal=s.exists()?(s.val()||{}):{};if(currentRole==='admin'&&activeAdminTab==='jadwal')renderAdminTab('jadwal');if(currentRole==='karyawan')renderKaryawan();});
-  var h6=refs.jamPesan.on('value',function(s){cache.jamPesan=s.exists()?s.val():{buka:'07:00',tutup:'10:00',aktif:1};if(currentRole==='karyawan')renderKaryawan();if(currentRole==='warmindo')renderWarmindo();});
-  var h7=refs.rating.on('value',function(s){cache.rating=s.exists()?(s.val()||{}):{};if(currentRole==='admin'&&activeAdminTab==='menu')renderAdminTab('menu');if(currentRole==='warmindo')renderWarmindo();});
+  var h5=refs.jadwal.on('value',function(s){cache.jadwal=s.exists()?(s.val()||{}):{};if(currentRole==='karyawan')renderKaryawan();if(currentRole==='warmindo')renderWarmindo();});
+  var h6=refs.jamPesan.on('value',function(s){cache.jamPesan=s.exists()?(s.val()||{}):{};if(currentRole==='karyawan')renderKaryawan();if(currentRole==='warmindo')renderWarmindo();});
+  var h7=refs.rating.on('value',function(s){cache.rating=s.exists()?(s.val()||{}):{};if(currentRole==='warmindo')renderWarmindo();});
   var h8=refs.lunasHistory.on('value',function(s){cache.lunasHistory=s.exists()?(s.val()||{}):{};if(currentRole==='admin'&&activeAdminTab==='tagihan')renderAdminTab('tagihan');if(currentRole==='karyawan')renderKaryawan();});
   var h9=refs.lunasBayar.on('value',function(s){cache.lunasBayar=s.exists()?(s.val()||{}):{};if(currentRole==='admin'&&activeAdminTab==='tagihan')renderAdminTab('tagihan');if(currentRole==='karyawan')renderKaryawan();});
   var h10=refs.chatPesan.on('value',function(s){
@@ -989,8 +1028,16 @@ function fmtDate(d){return new Date(d+'T00:00:00').toLocaleDateString('id-ID',{d
 function rp(n){return'Rp '+n.toLocaleString('id');}
 function inisial(nama){return nama.split(' ').map(function(w){return w[0];}).join('').substring(0,2);}
 function nowTime(){var n=new Date();return n.getHours().toString().padStart(2,'0')+':'+n.getMinutes().toString().padStart(2,'0');}
-function isOrderOpen(){var jp=cache.jamPesan;if(!jp.aktif)return false;var now=nowTime();return now>=jp.buka&&now<=jp.tutup;}
-function getMenuHariIni(){var d=new Date().getDay();var jh=cache.jadwal[d];if(jh&&jh.menuIds&&jh.menuIds.length>0)return cache.menu.filter(function(m){return jh.menuIds.indexOf(m.id)!==-1;});return cache.menu;}
+function getJamPesan(wid){return(cache.jamPesan&&cache.jamPesan[wid])||{buka:'07:00',tutup:'10:00',aktif:1};}
+function getJadwalHari(wid,day){var w=cache.jadwal[wid];return(w&&w[day])||{menuIds:[]};}
+function getWarmindoNama(wid){var w=cache.warmindoAccounts.find(function(x){return x.id===wid;});return w?w.nama:'Warmindo';}
+function isOrderOpen(wid){var jp=getJamPesan(wid);if(!jp.aktif)return false;var now=nowTime();return now>=jp.buka&&now<=jp.tutup;}
+function getMenuHariIni(wid){
+  var menuVendor=cache.menu.filter(function(m){return(m.warmindoId||'w1')===wid;});
+  var d=new Date().getDay();var jh=getJadwalHari(wid,d);
+  if(jh&&jh.menuIds&&jh.menuIds.length>0)return menuVendor.filter(function(m){return jh.menuIds.indexOf(m.id)!==-1;});
+  return menuVendor;
+}
 function renderLoginNama(){
   // Just refresh dropdown if it's open
   var q=document.getElementById('login-nama-input');
@@ -1073,7 +1120,7 @@ function onRoleChange(){document.getElementById('wrap-nama').style.display=docum
 function doLogin(){
   var role=document.getElementById('login-role').value;
   if(role==='admin'){if(pinInput===ADMIN_PIN)loginAs('admin',{id:'admin',nama:'Admin HRD'});else showLoginErr();}
-  else if(role==='warmindo'){if(pinInput===WARMINDO_PIN)loginAs('warmindo',{id:'warmindo',nama:'Petugas Warmindo'});else showLoginErr();}
+  else if(role==='warmindo'){var w=cache.warmindoAccounts.find(function(x){return x.pin===pinInput;});if(w)loginAs('warmindo',w);else showLoginErr();}
   else{var kid=document.getElementById('login-nama').value;var k=cache.karyawan.find(function(x){return x.id===kid;});if(k&&pinInput===k.pin)loginAs('karyawan',k);else showLoginErr();}
 }
 function showLoginErr(){document.getElementById('login-err').style.display='block';clearPin();}
@@ -1083,7 +1130,7 @@ function loginAs(role,user){
   try{localStorage.setItem('myk_session',JSON.stringify({role:role,user:user,ts:Date.now()}));}catch(e){}
   showScreen('s-'+role);window.scrollTo(0,0);
   updateNotifBtn();updateSuaraBtn();
-  if(role==='karyawan'){keranjang={};showPesananExpanded=true;renderKaryawan();}
+  if(role==='karyawan'){keranjang={};showPesananExpanded=true;selectedWarmindoId=null;renderKaryawan();}
   if(role==='warmindo'){
     renderWarmindo();
     setTimeout(cekPesananTerlewat,2000);
@@ -1091,7 +1138,7 @@ function loginAs(role,user){
   if(role==='admin'){activeAdminTab='rekap';renderAdminAll();}
 }
 function doLogout(){
-  currentRole=null;currentUser=null;keranjang={};
+  currentRole=null;currentUser=null;keranjang={};selectedWarmindoId=null;
   try{localStorage.removeItem('myk_session');}catch(e){}
   clearPin();document.getElementById('login-role').value='karyawan';onRoleChange();showScreen('s-login');window.scrollTo(0,0);
 }
@@ -1099,19 +1146,50 @@ function doLogout(){
 // ─────────────────────────────────────────────────────────
 //  JAM PESAN
 // ─────────────────────────────────────────────────────────
-function openModalJam(){var jp=cache.jamPesan;document.getElementById('jam-buka').value=jp.buka||'07:00';document.getElementById('jam-tutup').value=jp.tutup||'10:00';document.getElementById('jam-status').value=jp.aktif?'1':'0';document.getElementById('modal-jam').classList.add('show');}
-function simpanJam(){db.ref('jamPesan').set({buka:document.getElementById('jam-buka').value,tutup:document.getElementById('jam-tutup').value,aktif:document.getElementById('jam-status').value==='1'?1:0}).then(function(){showToast('✅ Jam pemesanan disimpan','ok');closeModal('modal-jam');});}
+function openModalJam(){var jp=getJamPesan(currentUser.id);document.getElementById('jam-buka').value=jp.buka||'07:00';document.getElementById('jam-tutup').value=jp.tutup||'10:00';document.getElementById('jam-status').value=jp.aktif?'1':'0';document.getElementById('modal-jam').classList.add('show');}
+function simpanJam(){db.ref('jamPesan/'+currentUser.id).set({buka:document.getElementById('jam-buka').value,tutup:document.getElementById('jam-tutup').value,aktif:document.getElementById('jam-status').value==='1'?1:0}).then(function(){showToast('✅ Jam pemesanan disimpan','ok');closeModal('modal-jam');});}
 
 // ─────────────────────────────────────────────────────────
 //  KARYAWAN — MULTI PESANAN PER HARI
 //  Karyawan bisa pesan lagi kapan saja selama jam buka,
 //  riwayat pesanan hari ini tetap ditampilkan di atas form.
 // ─────────────────────────────────────────────────────────
-function renderKaryawan(){
+// ─── PILIH WARMINDO (sebelum lihat menu) ───
+function renderPilihWarmindo(){
   var firstName=currentUser.nama.split(' ')[0];
   document.getElementById('k-nama-header').textContent='Halo, '+firstName+'! 👋';
-  var jp=cache.jamPesan;
-  document.getElementById('k-jam-info').textContent='⏰ Pesan: '+jp.buka+' – '+jp.tutup+(jp.aktif?' (Buka)':' (Tutup)');
+  document.getElementById('k-jam-info').textContent='Pilih Warmindo dulu untuk mulai pesan 🍱';
+  document.getElementById('k-budget-pill').textContent='Jatah makan: '+rp(BUDGET)+'/hari';
+  var el=document.getElementById('k-content');
+  var f=document.getElementById('order-float');if(f)f.classList.remove('show');
+  if(cache.warmindoAccounts.length===0){
+    el.innerHTML='<div class="empty-state"><div class="empty-icon">🏪</div><p style="font-size:14px;font-weight:600">Belum ada Warmindo terdaftar</p><span>Hubungi Admin HRD</span></div>';
+    return;
+  }
+  el.innerHTML='<div class="section-label">🏪 Pilih Warmindo</div>'
+    +cache.warmindoAccounts.map(function(w){
+      var jp=getJamPesan(w.id);
+      var buka=isOrderOpen(w.id);
+      var jumlahMenu=cache.menu.filter(function(m){return(m.warmindoId||'w1')===w.id;}).length;
+      return'<div class="menu-card" style="cursor:pointer" onclick="pilihWarmindo(\''+w.id+'\')">'
+        +'<div class="menu-card-emoji">🍱</div>'
+        +'<div style="flex:1">'
+        +'<div class="menu-card-name">'+w.nama+'</div>'
+        +'<div style="font-size:12px;color:var(--text3);margin-top:2px">'+jumlahMenu+' menu tersedia</div>'
+        +(buka?'<span class="menu-card-tag tag-free" style="margin-top:4px">✓ Buka '+jp.buka+'–'+jp.tutup+'</span>':'<span class="menu-card-tag tag-over" style="margin-top:4px">Tutup</span>')
+        +'</div>'
+        +'<div style="font-size:20px;color:var(--text3)">›</div>'
+        +'</div>';
+    }).join('');
+}
+function pilihWarmindo(wid){selectedWarmindoId=wid;keranjang={};renderKaryawan();}
+function gantiWarmindo(){selectedWarmindoId=null;keranjang={};renderKaryawan();}
+function renderKaryawan(){
+  if(!selectedWarmindoId){renderPilihWarmindo();return;}
+  var firstName=currentUser.nama.split(' ')[0];
+  document.getElementById('k-nama-header').textContent='Halo, '+firstName+'! 👋';
+  var jp=getJamPesan(selectedWarmindoId);
+  document.getElementById('k-jam-info').innerHTML='⏰ Pesan: '+jp.buka+' – '+jp.tutup+(jp.aktif?' (Buka)':' (Tutup)')+' · 🍱 '+getWarmindoNama(selectedWarmindoId)+' <a onclick="gantiWarmindo()" style="color:#fff;text-decoration:underline;cursor:pointer;font-weight:700">(ganti)</a>';
   document.getElementById('k-budget-pill').textContent='Jatah makan: '+rp(BUDGET)+'/hari';
 
   var pesananHari=cache.pesanan.filter(function(p){return p.kid===currentUser.id&&p.tanggal===today();});
@@ -1120,7 +1198,7 @@ function renderKaryawan(){
   // Hitung sisa tagihan per hari (sama persis dengan hitungTotalOverKid)
   var tagihanAkumulasi=hitungTotalOverKid(currentUser.id);
   var el=document.getElementById('k-content');
-  var open=isOrderOpen();
+  var open=isOrderOpen(selectedWarmindoId);
 
   // ── BAGIAN 1: RINGKASAN PESANAN HARI INI (jika ada) ──
   var pesananHariHtml='';
@@ -1192,7 +1270,7 @@ function renderKaryawan(){
 
   // ── BAGIAN 3: FORM PESAN BARU ──
   // ↓↓↓ SELALU tampilkan form pesan selama jam buka, walaupun sudah pesan ↓↓↓
-  var menuHariIni=getMenuHariIni();
+  var menuHariIni=getMenuHariIni(selectedWarmindoId);
   var formHtml='';
   if(!open){
     formHtml='<div class="order-closed">'
@@ -1298,6 +1376,7 @@ function renderRiwayatKaryawan(){
         +'<div style="display:flex;align-items:center;gap:8px"><span>'+getEmoji(p.menu)+'</span>'
         +'<div><div style="font-size:13px;font-weight:600">'+p.menu+(p.qty>1?' ×'+p.qty:'')+'</div>'
         +'<span class="badge '+p.status.toLowerCase()+'" style="font-size:10px;margin-top:2px">'+p.status+'</span>'
+        +' <span style="font-size:10px;color:var(--text3)">🍱 '+getWarmindoNama(p.warmindoId||'w1')+'</span>'
         +'</div></div>'
         +'<div style="text-align:right"><div style="font-size:13px;font-weight:700">'+rp(p.harga)+'</div>'+ratingBtn+'</div></div>';
     });
@@ -1442,7 +1521,8 @@ function updateRingkasan(){
 }
 
 function kirimPesan(){
-  if(!isOrderOpen()){showToast('⏰ Pemesanan sedang tutup');return;}
+  if(!selectedWarmindoId){showToast('Pilih Warmindo dulu');return;}
+  if(!isOrderOpen(selectedWarmindoId)){showToast('⏰ Pemesanan sedang tutup');return;}
   var items=Object.entries(keranjang);if(items.length===0){showToast('Pilih menu dulu');return;}
   var now=new Date();
   var jam=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
@@ -1482,7 +1562,7 @@ function kirimPesan(){
     sisaBeban-=beban;
     var selisih=harga-beban;
     var pid='p'+Date.now()+'_'+pair[0]+'_'+Math.random().toString(36).slice(2,6);
-    updates['pesanan/'+pid]={id:pid,kid:currentUser.id,karyawan:currentUser.nama,menu:m.nama,qty:pair[1],harga:harga,selisih:selisih,beban:beban,catatan:catatan,lokasi:lokasi,waktu:jam,tanggal:today(),status:'Menunggu'};
+    updates['pesanan/'+pid]={id:pid,kid:currentUser.id,karyawan:currentUser.nama,menu:m.nama,qty:pair[1],harga:harga,selisih:selisih,beban:beban,catatan:catatan,lokasi:lokasi,waktu:jam,tanggal:today(),status:'Menunggu',warmindoId:selectedWarmindoId};
   });
 
   // Update tagihan dengan nilai yang benar (akumulatif)
@@ -1526,18 +1606,30 @@ function kirimRating(){
 // ─────────────────────────────────────────────────────────
 //  WARMINDO
 // ─────────────────────────────────────────────────────────
+var activeWarmindoTab='pesanan';
+function warmindoTab(tab){
+  activeWarmindoTab=tab;
+  document.querySelectorAll('#s-warmindo .tab').forEach(function(el,i){el.classList.toggle('active',['pesanan','menu','jadwal'][i]===tab);});
+  renderWarmindo();
+}
 function renderWarmindo(){
-  var hari=cache.pesanan.filter(function(p){return p.tanggal===today();});
+  if(activeWarmindoTab==='menu'){renderWarmindoMenu();return;}
+  if(activeWarmindoTab==='jadwal'){renderWarmindoJadwal();return;}
+  renderWarmindoPesanan();
+}
+function renderWarmindoPesanan(){
+  var hari=cache.pesanan.filter(function(p){return(p.warmindoId||'w1')===currentUser.id&&p.tanggal===today();});
   var menunggu=hari.filter(function(p){return p.status==='Menunggu';});
   var diproses=hari.filter(function(p){return p.status==='Diproses';});
   var selesai=hari.filter(function(p){return p.status==='Selesai';});
-  var jp=cache.jamPesan;
+  var jp=getJamPesan(currentUser.id);
   var statusBadge=jp.aktif?'<span style="background:rgba(29,191,115,.3);color:#6ee7b7;font-size:11px;font-weight:700;padding:3px 10px;border-radius:99px;margin-left:8px">Buka '+jp.buka+'–'+jp.tutup+'</span>':'<span style="background:rgba(229,57,53,.3);color:#fca5a5;font-size:11px;font-weight:700;padding:3px 10px;border-radius:99px;margin-left:8px">Tutup</span>';
-  document.getElementById('w-sub').innerHTML='<span class="rt-dot"></span>'+hari.length+' pesanan · '+fmtDate(today())+statusBadge;
+  document.getElementById('w-sub').innerHTML='<span class="rt-dot"></span>'+currentUser.nama+' · '+hari.length+' pesanan · '+fmtDate(today())+statusBadge;
   document.getElementById('w-stat-row').innerHTML=[{lbl:'Menunggu',val:menunggu.length,c:'#FF6B35'},{lbl:'Diproses',val:diproses.length,c:'#60A5FA'},{lbl:'Selesai',val:selesai.length,c:'#34D399'}].map(function(s){return'<div style="flex:1;background:rgba(255,255,255,.15);border-radius:10px;padding:10px 12px"><div style="font-size:18px;font-weight:800;color:'+s.c+'">'+s.val+'</div><div style="font-size:11px;color:rgba(255,255,255,.6);font-weight:600">'+s.lbl+'</div></div>';}).join('');
   var el=document.getElementById('w-content');
   var jamBtn='<button onclick="openModalJam()" style="width:100%;padding:11px;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.2);border-radius:10px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:12px">⏰ Atur Jam · '+jp.buka+'–'+jp.tutup+'</button>';
-  var ratingByMenu={};Object.values(cache.rating).forEach(function(r){if(!ratingByMenu[r.menu])ratingByMenu[r.menu]=[];ratingByMenu[r.menu].push(r.nilai);});
+  var namaMenuVendor=cache.menu.filter(function(m){return(m.warmindoId||'w1')===currentUser.id;}).map(function(m){return m.nama;});
+  var ratingByMenu={};Object.values(cache.rating).filter(function(r){return namaMenuVendor.indexOf(r.menu)!==-1;}).forEach(function(r){if(!ratingByMenu[r.menu])ratingByMenu[r.menu]=[];ratingByMenu[r.menu].push(r.nilai);});
   var ratingHtml='';
   if(Object.keys(ratingByMenu).length>0){
     var sortedMenus=Object.entries(ratingByMenu).sort(function(a,b){
@@ -1546,7 +1638,7 @@ function renderWarmindo(){
       return avgB-avgA;
     });
     // Hitung rata-rata keseluruhan
-    var allNilai=Object.values(cache.rating).map(function(r){return r.nilai;});
+    var allNilai=Object.values(cache.rating).filter(function(r){return namaMenuVendor.indexOf(r.menu)!==-1;}).map(function(r){return r.nilai;});
     var avgAll=(allNilai.reduce(function(a,b){return a+b;},0)/allNilai.length).toFixed(1);
     var topMenu=sortedMenus[0];
     var topAvg=(topMenu[1].reduce(function(a,b){return a+b;},0)/topMenu[1].length).toFixed(1);
@@ -1592,7 +1684,7 @@ function renderWarmindo(){
   }
 
   // ── ULASAN & KOMENTAR lengkap ──
-  var allReviews=Object.values(cache.rating)
+  var allReviews=Object.values(cache.rating).filter(function(r){return namaMenuVendor.indexOf(r.menu)!==-1;})
     .sort(function(a,b){return(b.tanggal||'')>(a.tanggal||'')?1:-1;});
   var ulasanHtml='';
   if(allReviews.length>0){
@@ -1681,7 +1773,7 @@ function updateStatus(id,s){db.ref('pesanan/'+id+'/status').set(s).then(function
 function cekPesananTerlewat(){
   if(currentRole!=='warmindo'||!_suaraAktif)return;
   var menunggu=cache.pesanan.filter(function(p){
-    return p.tanggal===today()&&p.status==='Menunggu';
+    return(p.warmindoId||'w1')===currentUser.id&&p.tanggal===today()&&p.status==='Menunggu';
   });
   if(menunggu.length===0)return;
 
@@ -1725,8 +1817,8 @@ function filterRatingMin(minVal,maxVal,el){
 // ─────────────────────────────────────────────────────────
 function adminTab(tab){
   activeAdminTab=tab;
-  ['rekap','tagihan','jadwal','menu','akun'].forEach(function(t){document.getElementById('at-'+t).style.display=t===tab?'block':'none';});
-  document.querySelectorAll('#s-admin .tab').forEach(function(el,i){el.classList.toggle('active',['rekap','tagihan','jadwal','menu','akun'][i]===tab);});
+  ['rekap','tagihan','akun'].forEach(function(t){document.getElementById('at-'+t).style.display=t===tab?'block':'none';});
+  document.querySelectorAll('#s-admin .tab').forEach(function(el,i){el.classList.toggle('active',['rekap','tagihan','akun'][i]===tab);});
   renderAdminTab(tab);
 }
 function renderAdminAll(){renderAdminTab(activeAdminTab);}
@@ -1863,7 +1955,7 @@ function renderAdminTab(tab){
           return'<div class="list-row">'
             +'<div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0"><span style="font-size:20px;flex-shrink:0">'+getEmoji(p.menu)+'</span>'
             +'<div style="min-width:0"><div style="font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+p.karyawan+'</div>'
-            +'<div style="font-size:11px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+p.menu+(p.qty>1?' ×'+p.qty:'')+' · '+fmtDate(p.tanggal)+' '+p.waktu+'</div>'
+            +'<div style="font-size:11px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+p.menu+(p.qty>1?' ×'+p.qty:'')+' · 🍱'+getWarmindoNama(p.warmindoId||'w1')+' · '+fmtDate(p.tanggal)+' '+p.waktu+'</div>'
             +(p.catatan?'<div style="font-size:10px;color:var(--text3)">'+p.catatan+'</div>':'')
             +'</div></div>'
             +'<div style="text-align:right;flex-shrink:0;margin-left:8px">'
@@ -1990,57 +2082,6 @@ function renderAdminTab(tab){
     });
   }
 
-  if(tab==='jadwal'){
-    var dayPills=DAYS_ID.map(function(d,i){var isToday=i===new Date().getDay();return'<div class="day-pill'+(selectedJadwalDay===i?' active':(isToday?' today':''))+'" onclick="selectJadwalDay('+i+')">'+d+(isToday?'<br><span style="font-size:9px">Hari ini</span>':'')+'</div>';}).join('');
-    var jadwalHari=cache.jadwal[selectedJadwalDay]||{menuIds:[]};var selectedMenuIds=jadwalHari.menuIds||[];
-    var menuCheckboxes=cache.menu.map(function(m){var checked=selectedMenuIds.indexOf(m.id)!==-1;return'<label style="display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--border);cursor:pointer"><input type="checkbox" id="jd-'+m.id+'" value="'+m.id+'" '+(checked?'checked':'')+' onchange="saveJadwalDay()" style="width:18px;height:18px;accent-color:var(--orange);flex-shrink:0"><span style="font-size:20px">'+getEmoji(m.nama)+'</span><div style="flex:1"><div style="font-size:14px;font-weight:700">'+m.nama+'</div><div style="font-size:12px;color:var(--orange);font-weight:600">'+rp(m.harga)+'</div></div></label>';}).join('');
-    var jp2=cache.jamPesan;
-    document.getElementById('at-jadwal').innerHTML=
-      '<div class="card" style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><div style="font-size:14px;font-weight:800">⏰ Jam Pemesanan</div><button onclick="openModalJam()" class="btn primary sm">Atur</button></div>'
-      +'<div style="display:flex;gap:16px">'
-      +'<div><div style="font-size:10px;color:var(--text3);font-weight:700">BUKA</div><div style="font-size:18px;font-weight:800;color:var(--green)">'+jp2.buka+'</div></div>'
-      +'<div><div style="font-size:10px;color:var(--text3);font-weight:700">TUTUP</div><div style="font-size:18px;font-weight:800;color:var(--red)">'+jp2.tutup+'</div></div>'
-      +'<div><div style="font-size:10px;color:var(--text3);font-weight:700">STATUS</div><div style="font-size:14px;font-weight:800;margin-top:2px">'+(jp2.aktif?'<span style="color:var(--green)">✅ Buka</span>':'<span style="color:var(--red)">🔒 Tutup</span>')+'</div></div>'
-      +'</div></div>'
-      +'<div class="section-label">📅 Menu Per Hari</div>'
-      +'<div class="alert info" style="margin-bottom:12px">Centang menu yang tersedia. Jika tidak ada yang dicentang, semua menu ditampilkan.</div>'
-      +'<div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:14px;scrollbar-width:none">'+dayPills+'</div>'
-      +'<div class="card">'
-      +'<div style="font-size:13px;font-weight:800;color:var(--orange);margin-bottom:8px">'+DAYS_ID[selectedJadwalDay]+(selectedJadwalDay===new Date().getDay()?' (Hari Ini)':'')+'</div>'
-      +(cache.menu.length===0?'<div style="color:var(--text3);font-size:13px">Belum ada menu.</div>':menuCheckboxes)
-      +'</div>';
-  }
-
-  if(tab==='menu'){
-    var menuItems=cache.menu.length===0
-      ?'<div class="empty-state" style="padding:24px 0"><div class="empty-icon">😅</div><p style="font-size:14px;font-weight:600">Belum ada menu</p></div>'
-      :cache.menu.map(function(m){var r=getRatingMenu(m.nama);var rH=r?'<div style="font-size:11px;color:var(--yellow)">'+renderStars(r.avg)+' '+r.avg+' ('+r.count+' ulasan)</div>':'<div style="font-size:11px;color:var(--text3)">Belum ada rating</div>';return'<div style="background:#fff;border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:10px;box-shadow:var(--shadow)"><div style="font-size:26px;width:44px;height:44px;background:var(--orange-light);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0">'+getEmoji(m.nama)+'</div><div style="flex:1"><div style="font-size:14px;font-weight:700">'+m.nama+'</div><div style="font-size:12px;color:var(--text3);margin-top:1px">'+('📂 '+(m.kategori||'Lainnya'))+'</div><div style="font-size:13px;font-weight:600;color:'+(m.harga>BUDGET?'var(--red)':'var(--orange)')+'">'+rp(m.harga)+(m.harga>BUDGET?' ⚠️':'')+'</div>'+rH+'</div><button class="btn danger sm" onclick="hapusMenu(\''+m.id+'\')">Hapus</button></div>';}).join('');
-    var reviews=Object.values(cache.rating).filter(function(r){return r.komentar;}).sort(function(a,b){return b.tanggal>a.tanggal?1:-1;}).slice(0,5);
-    var reviewHtml=reviews.length===0?'':'<div class="section-label">💬 Ulasan Terbaru</div>'+reviews.map(function(r){return'<div class="card" style="padding:12px;margin-bottom:8px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div style="font-size:13px;font-weight:700">'+getEmoji(r.menu)+' '+r.menu+'</div><div style="font-size:12px;color:var(--yellow)">'+renderStars(r.nilai)+' '+r.nilai+'/5</div></div>'+(r.komentar?'<div style="font-size:12px;color:var(--text2);font-style:italic">"'+r.komentar+'"</div>':'')+'<div style="font-size:11px;color:var(--text3);margin-top:4px">'+fmtDate(r.tanggal)+'</div></div>';}).join('');
-    document.getElementById('at-menu').innerHTML=
-      '<div class="section-label">🍽️ Daftar Menu ('+cache.menu.length+' item)</div>'
-      +menuItems
-      +'<div class="section-label">➕ Tambah Menu Baru</div>'
-      +'<div class="card">'
-      +'<div class="fg"><label>Nama Menu</label><input type="text" id="nm-nama" placeholder="mis: Ayam Geprek"></div>'
-      +'<div class="fg"><label>Kategori</label><select id="nm-kategori">'+KATEGORI_LIST.filter(function(k){return k!=='Semua';}).map(function(k){return'<option value="'+k+'">'+k+'</option>';}).join('')+'</select></div>'
-      +'<div class="fg" style="margin-bottom:4px"><label>Harga (Rp)</label><input type="number" id="nm-harga" placeholder="mis: 14000" inputmode="numeric"></div>'
-      +'<button class="btn primary" onclick="tambahMenu()">Tambah Menu</button>'
-      +'</div>'
-      +'<div class="section-label">📥 Import Menu dari Excel</div>'
-      +'<div class="card">'
-      +'<div class="alert info" style="margin-bottom:10px">Format: kolom <strong>A=Nama Menu</strong>, <strong>B=Kategori</strong>, <strong>C=Harga</strong> (angka). Baris pertama = header. Delimiter <strong>koma (,)</strong> atau <strong>titik koma (;)</strong> otomatis terdeteksi. Harga boleh pakai titik ribuan (mis: 15.000).</div>'
-      +'<button class="btn secondary" onclick="unduhTemplateExcel()" style="margin-bottom:10px">⬇️ Unduh Template Excel</button>'
-      +'<div class="fg" style="margin-bottom:4px"><label>Pilih File Excel (.xlsx / .csv)</label>'
-      +'<input type="file" id="import-excel-file" accept=".xlsx,.csv,.xls" style="padding:8px;font-size:13px">'
-      +'</div>'
-      +'<div id="import-preview" style="display:none;background:var(--bg);border-radius:var(--radius-sm);padding:10px;margin-bottom:10px;max-height:180px;overflow-y:auto;font-size:12px"></div>'
-      +'<button class="btn success" onclick="importMenuExcel()">📥 Import Sekarang</button>'
-      +'</div>'
-      +'<div class="alert info">ℹ️ Menu di atas '+rp(BUDGET)+' akan memunculkan tagihan ke karyawan.</div>'
-      +reviewHtml;
-  }
-
   if(tab==='akun'){
     var akunItems=cache.karyawan.map(function(k){return'<div style="background:#fff;border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:10px;box-shadow:var(--shadow)"><div class="list-avatar">'+inisial(k.nama)+'</div><div style="flex:1"><div style="font-size:14px;font-weight:700">'+k.nama+'</div><div style="font-size:12px;color:var(--text3)">PIN: '+'•'.repeat(k.pin.length)+'</div></div><div style="display:flex;gap:6px"><button class="btn secondary sm" onclick="openGantiPin(\''+k.id+'\')">🔑 PIN</button><button class="btn danger sm" onclick="hapusKaryawan(\''+k.id+'\')">Hapus</button></div></div>';}).join('');
     document.getElementById('at-akun').innerHTML=
@@ -2062,22 +2103,107 @@ function renderAdminTab(tab){
       +'<div id="import-akun-preview" style="display:none;background:var(--bg);border-radius:var(--radius-sm);padding:10px;margin-bottom:10px;max-height:200px;overflow-y:auto;font-size:12px"></div>'
       +'<button class="btn success" onclick="importKaryawanExcel()">📥 Import Sekarang</button>'
       +'</div>'
+      +'<div class="section-label">🍱 Akun Warmindo ('+cache.warmindoAccounts.length+' vendor)</div>'
+      +(cache.warmindoAccounts.length===0?'<div class="empty-state" style="padding:16px 0"><p style="font-size:13px">Belum ada akun warmindo</p></div>':cache.warmindoAccounts.map(function(w){
+        var jumlahMenu=cache.menu.filter(function(m){return(m.warmindoId||'w1')===w.id;}).length;
+        return'<div style="background:#fff;border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:10px;box-shadow:var(--shadow)"><div class="list-avatar">🍱</div><div style="flex:1"><div style="font-size:14px;font-weight:700">'+w.nama+'</div><div style="font-size:12px;color:var(--text3)">PIN: '+'•'.repeat(w.pin.length)+' · '+jumlahMenu+' menu</div></div><div style="display:flex;gap:6px"><button class="btn secondary sm" onclick="openGantiPin(\''+w.id+'\',\'warmindo\')">🔑 PIN</button><button class="btn danger sm" onclick="hapusWarmindoAccount(\''+w.id+'\')">Hapus</button></div></div>';
+      }).join(''))
+      +'<div class="section-label">➕ Tambah Warmindo Baru</div>'
+      +'<div class="card">'
+      +'<div class="fg"><label>Nama Warmindo</label><input type="text" id="nw-nama" placeholder="mis: Warmindo Bu Sri"></div>'
+      +'<div class="fg" style="margin-bottom:4px"><label>PIN (4 digit)</label><input type="number" id="nw-pin" placeholder="mis: 8888" maxlength="4" inputmode="numeric"></div>'
+      +'<button class="btn primary" onclick="tambahWarmindoAccount()">Tambah Warmindo</button>'
+      +'</div>'
       +'<div class="section-label">💳 Pengaturan Pembayaran</div>'
       +'<div class="card" style="display:flex;align-items:center;justify-content:space-between">'
       +'<div><div style="font-size:14px;font-weight:700">QRIS & Transfer Bank</div><div style="font-size:12px;color:var(--text3);margin-top:2px">Atur info pembayaran untuk karyawan</div></div>'
       +'<button class="btn primary sm" onclick="openPaymentSettings()">⚙️ Atur</button>'
       +'</div>'
-      +'<div class="alert warning">⚠️ PIN admin: <strong>0000</strong> · PIN warmindo: <strong>9999</strong> · Jangan gunakan untuk karyawan.</div>';
+      +'<div class="alert warning">⚠️ PIN admin: <strong>0000</strong> · PIN vendor Warmindo diatur sendiri-sendiri di atas · Jangan gunakan PIN yang sama untuk karyawan.</div>';
   }
+}
+function tambahWarmindoAccount(){
+  var nama=document.getElementById('nw-nama').value.trim();
+  var pin=document.getElementById('nw-pin').value.trim();
+  if(!nama||pin.length!==4||isNaN(pin)){showToast('Isi nama dan PIN 4 digit');return;}
+  if(isPinTaken(pin)){showToast('PIN ini sudah dipakai sistem');return;}
+  var wid='w'+Date.now();
+  db.ref('warmindoAccounts/'+wid).set({id:wid,nama:nama,pin:pin}).then(function(){
+    showToast('✅ Warmindo ditambahkan','ok');
+    document.getElementById('nw-nama').value='';document.getElementById('nw-pin').value='';
+  });
+}
+function hapusWarmindoAccount(wid){
+  if(!confirm('Hapus akun warmindo ini? Menu & jadwal milik vendor ini TIDAK ikut terhapus otomatis.'))return;
+  db.ref('warmindoAccounts/'+wid).remove().then(function(){showToast('Akun warmindo dihapus');});
 }
 
 // ─────────────────────────────────────────────────────────
+//  MENU (per vendor)
+// ─────────────────────────────────────────────────────────
+function renderWarmindoMenu(){
+  document.getElementById('w-sub').innerHTML='<span class="rt-dot"></span>'+currentUser.nama+' · Kelola Menu';
+  document.getElementById('w-stat-row').innerHTML='';
+  var menuVendor=cache.menu.filter(function(m){return(m.warmindoId||'w1')===currentUser.id;});
+  var menuItems=menuVendor.length===0
+    ?'<div class="empty-state" style="padding:24px 0"><div class="empty-icon">😅</div><p style="font-size:14px;font-weight:600">Belum ada menu</p></div>'
+    :menuVendor.map(function(m){var r=getRatingMenu(m.nama);var rH=r?'<div style="font-size:11px;color:var(--yellow)">'+renderStars(r.avg)+' '+r.avg+' ('+r.count+' ulasan)</div>':'<div style="font-size:11px;color:var(--text3)">Belum ada rating</div>';return'<div style="background:#fff;border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:10px;box-shadow:var(--shadow)"><div style="font-size:26px;width:44px;height:44px;background:var(--orange-light);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0">'+getEmoji(m.nama)+'</div><div style="flex:1"><div style="font-size:14px;font-weight:700">'+m.nama+'</div><div style="font-size:12px;color:var(--text3);margin-top:1px">'+('📂 '+(m.kategori||'Lainnya'))+'</div><div style="font-size:13px;font-weight:600;color:'+(m.harga>BUDGET?'var(--red)':'var(--orange)')+'">'+rp(m.harga)+(m.harga>BUDGET?' ⚠️':'')+'</div>'+rH+'</div><button class="btn danger sm" onclick="hapusMenu(\''+m.id+'\')">Hapus</button></div>';}).join('');
+  var reviews=Object.values(cache.rating).filter(function(r){return r.komentar&&menuVendor.some(function(m){return m.nama===r.menu;});}).sort(function(a,b){return b.tanggal>a.tanggal?1:-1;}).slice(0,5);
+  var reviewHtml=reviews.length===0?'':'<div class="section-label">💬 Ulasan Terbaru</div>'+reviews.map(function(r){return'<div class="card" style="padding:12px;margin-bottom:8px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div style="font-size:13px;font-weight:700">'+getEmoji(r.menu)+' '+r.menu+'</div><div style="font-size:12px;color:var(--yellow)">'+renderStars(r.nilai)+' '+r.nilai+'/5</div></div>'+(r.komentar?'<div style="font-size:12px;color:var(--text2);font-style:italic">"'+r.komentar+'"</div>':'')+'<div style="font-size:11px;color:var(--text3);margin-top:4px">'+fmtDate(r.tanggal)+'</div></div>';}).join('');
+  document.getElementById('w-content').innerHTML=
+    '<div class="section-label">🍽️ Daftar Menu ('+menuVendor.length+' item)</div>'
+    +menuItems
+    +'<div class="section-label">➕ Tambah Menu Baru</div>'
+    +'<div class="card">'
+    +'<div class="fg"><label>Nama Menu</label><input type="text" id="nm-nama" placeholder="mis: Ayam Geprek"></div>'
+    +'<div class="fg"><label>Kategori</label><select id="nm-kategori">'+KATEGORI_LIST.filter(function(k){return k!=='Semua';}).map(function(k){return'<option value="'+k+'">'+k+'</option>';}).join('')+'</select></div>'
+    +'<div class="fg" style="margin-bottom:4px"><label>Harga (Rp)</label><input type="number" id="nm-harga" placeholder="mis: 14000" inputmode="numeric"></div>'
+    +'<button class="btn primary" onclick="tambahMenu()">Tambah Menu</button>'
+    +'</div>'
+    +'<div class="section-label">📥 Import Menu dari Excel</div>'
+    +'<div class="card">'
+    +'<div class="alert info" style="margin-bottom:10px">Format: kolom <strong>A=Nama Menu</strong>, <strong>B=Kategori</strong>, <strong>C=Harga</strong> (angka). Baris pertama = header. Delimiter <strong>koma (,)</strong> atau <strong>titik koma (;)</strong> otomatis terdeteksi. Harga boleh pakai titik ribuan (mis: 15.000).</div>'
+    +'<button class="btn secondary" onclick="unduhTemplateExcel()" style="margin-bottom:10px">⬇️ Unduh Template Excel</button>'
+    +'<div class="fg" style="margin-bottom:4px"><label>Pilih File Excel (.xlsx / .csv)</label>'
+    +'<input type="file" id="import-excel-file" accept=".xlsx,.csv,.xls" style="padding:8px;font-size:13px">'
+    +'</div>'
+    +'<div id="import-preview" style="display:none;background:var(--bg);border-radius:var(--radius-sm);padding:10px;margin-bottom:10px;max-height:180px;overflow-y:auto;font-size:12px"></div>'
+    +'<button class="btn success" onclick="importMenuExcel()">📥 Import Sekarang</button>'
+    +'</div>'
+    +'<div class="alert info">ℹ️ Menu di atas '+rp(BUDGET)+' akan memunculkan tagihan ke karyawan.</div>'
+    +reviewHtml;
+}
+// ─────────────────────────────────────────────────────────
 //  JADWAL
 // ─────────────────────────────────────────────────────────
-function selectJadwalDay(i){selectedJadwalDay=i;renderAdminTab('jadwal');}
+function renderWarmindoJadwal(){
+  document.getElementById('w-sub').innerHTML='<span class="rt-dot"></span>'+currentUser.nama+' · Jadwal Menu';
+  document.getElementById('w-stat-row').innerHTML='';
+  var menuVendor=cache.menu.filter(function(m){return(m.warmindoId||'w1')===currentUser.id;});
+  var jp2=getJamPesan(currentUser.id);
+  var dayPills=DAYS_ID.map(function(d,i){var isToday=i===new Date().getDay();return'<div class="day-pill'+(selectedJadwalDay===i?' active':(isToday?' today':''))+'" onclick="selectJadwalDay('+i+')">'+d+(isToday?'<br><span style="font-size:9px">Hari ini</span>':'')+'</div>';}).join('');
+  var jadwalHari=getJadwalHari(currentUser.id,selectedJadwalDay);var selectedMenuIds=jadwalHari.menuIds||[];
+  var menuCheckboxes=menuVendor.map(function(m){var checked=selectedMenuIds.indexOf(m.id)!==-1;return'<label style="display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--border);cursor:pointer"><input type="checkbox" id="jd-'+m.id+'" value="'+m.id+'" '+(checked?'checked':'')+' onchange="saveJadwalDay()" style="width:18px;height:18px;accent-color:var(--orange);flex-shrink:0"><span style="font-size:20px">'+getEmoji(m.nama)+'</span><div style="flex:1"><div style="font-size:14px;font-weight:700">'+m.nama+'</div><div style="font-size:12px;color:var(--orange);font-weight:600">'+rp(m.harga)+'</div></div></label>';}).join('');
+  document.getElementById('w-content').innerHTML=
+    '<div class="card" style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><div style="font-size:14px;font-weight:800">⏰ Jam Pemesanan</div><button onclick="openModalJam()" class="btn primary sm">Atur</button></div>'
+    +'<div style="display:flex;gap:16px">'
+    +'<div><div style="font-size:10px;color:var(--text3);font-weight:700">BUKA</div><div style="font-size:18px;font-weight:800;color:var(--green)">'+jp2.buka+'</div></div>'
+    +'<div><div style="font-size:10px;color:var(--text3);font-weight:700">TUTUP</div><div style="font-size:18px;font-weight:800;color:var(--red)">'+jp2.tutup+'</div></div>'
+    +'<div><div style="font-size:10px;color:var(--text3);font-weight:700">STATUS</div><div style="font-size:14px;font-weight:800;margin-top:2px">'+(jp2.aktif?'<span style="color:var(--green)">✅ Buka</span>':'<span style="color:var(--red)">🔒 Tutup</span>')+'</div></div>'
+    +'</div></div>'
+    +'<div class="section-label">📅 Menu Per Hari</div>'
+    +'<div class="alert info" style="margin-bottom:12px">Centang menu yang tersedia. Jika tidak ada yang dicentang, semua menu warmindo ini ditampilkan.</div>'
+    +'<div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:14px;scrollbar-width:none">'+dayPills+'</div>'
+    +'<div class="card">'
+    +'<div style="font-size:13px;font-weight:800;color:var(--orange);margin-bottom:8px">'+DAYS_ID[selectedJadwalDay]+(selectedJadwalDay===new Date().getDay()?' (Hari Ini)':'')+'</div>'
+    +(menuVendor.length===0?'<div style="color:var(--text3);font-size:13px">Belum ada menu. Tambah menu dulu di tab Menu.</div>':menuCheckboxes)
+    +'</div>';
+}
+function selectJadwalDay(i){selectedJadwalDay=i;renderWarmindoJadwal();}
 function saveJadwalDay(){
-  var menuIds=[];cache.menu.forEach(function(m){var cb=document.getElementById('jd-'+m.id);if(cb&&cb.checked)menuIds.push(m.id);});
-  db.ref('jadwal/'+selectedJadwalDay).set({menuIds:menuIds}).then(function(){showToast('✅ Jadwal '+DAYS_ID[selectedJadwalDay]+' disimpan','ok');});
+  var menuVendor=cache.menu.filter(function(m){return(m.warmindoId||'w1')===currentUser.id;});
+  var menuIds=[];menuVendor.forEach(function(m){var cb=document.getElementById('jd-'+m.id);if(cb&&cb.checked)menuIds.push(m.id);});
+  db.ref('jadwal/'+currentUser.id+'/'+selectedJadwalDay).set({menuIds:menuIds}).then(function(){showToast('✅ Jadwal '+DAYS_ID[selectedJadwalDay]+' disimpan','ok');});
 }
 
 // ─────────────────────────────────────────────────────────
@@ -2106,9 +2232,9 @@ function exportExcel(){
       p._selisihCalc=Math.max(0,(Number(p.harga)||0)-beban);
     });
   });
-  var rows=[['No','Karyawan','Menu','Qty','Harga','Ditanggung Kantor','Over Budget','Status','Tanggal','Waktu','Catatan']];
+  var rows=[['No','Karyawan','Warmindo','Menu','Qty','Harga','Ditanggung Kantor','Over Budget','Status','Tanggal','Waktu','Catatan']];
   list.sort(function(a,b){return a.tanggal>b.tanggal?1:-1;}).forEach(function(p,i){
-    rows.push([i+1,p.karyawan,p.menu,p.qty,p.harga,p._bebanCalc,p._selisihCalc,p.status,p.tanggal,p.waktu||'',p.catatan||'']);
+    rows.push([i+1,p.karyawan,getWarmindoNama(p.warmindoId||'w1'),p.menu,p.qty,p.harga,p._bebanCalc,p._selisihCalc,p.status,p.tanggal,p.waktu||'',p.catatan||'']);
   });
   var tB=list.reduce(function(a,p){return a+(p._bebanCalc||0);},0);
   var tO=list.reduce(function(a,p){return a+(p._selisihCalc||0);},0);
@@ -2158,12 +2284,12 @@ function exportPDF(){
     } else {
       overCell='<span style="color:#9CA3AF">-</span>';
     }
-    return'<tr style="border-bottom:1px solid #eee;'+(i%2===0?'background:#fafafa':'')+'"><td style="padding:7px 8px">'+(i+1)+'</td><td style="padding:7px 8px;font-weight:600">'+p.karyawan+'</td><td style="padding:7px 8px">'+p.menu+(p.qty>1?' ×'+p.qty:'')+'</td><td style="padding:7px 8px;color:#FF6B35;font-weight:700">Rp '+p.harga.toLocaleString('id')+'</td><td style="padding:7px 8px;color:#1DBF73;font-weight:700">Rp '+(p._bebanCalc||0).toLocaleString('id')+'</td><td style="padding:7px 8px">'+overCell+'</td><td style="padding:7px 8px"><span style="background:'+(p.status==='Selesai'?'#E6F9F0':p.status==='Diproses'?'#E3F2FD':'#FFFBEB')+';color:'+(p.status==='Selesai'?'#166534':p.status==='Diproses'?'#1565C0':'#B45309')+';padding:2px 8px;border-radius:99px;font-size:11px;font-weight:700">'+p.status+'</span></td><td style="padding:7px 8px;color:#6B7280;font-size:11px">'+fmtDate(p.tanggal)+'</td></tr>';
+    return'<tr style="border-bottom:1px solid #eee;'+(i%2===0?'background:#fafafa':'')+'"><td style="padding:7px 8px">'+(i+1)+'</td><td style="padding:7px 8px;font-weight:600">'+p.karyawan+'</td><td style="padding:7px 8px;color:#6B7280">🍱 '+getWarmindoNama(p.warmindoId||'w1')+'</td><td style="padding:7px 8px">'+p.menu+(p.qty>1?' ×'+p.qty:'')+'</td><td style="padding:7px 8px;color:#FF6B35;font-weight:700">Rp '+p.harga.toLocaleString('id')+'</td><td style="padding:7px 8px;color:#1DBF73;font-weight:700">Rp '+(p._bebanCalc||0).toLocaleString('id')+'</td><td style="padding:7px 8px">'+overCell+'</td><td style="padding:7px 8px"><span style="background:'+(p.status==='Selesai'?'#E6F9F0':p.status==='Diproses'?'#E3F2FD':'#FFFBEB')+';color:'+(p.status==='Selesai'?'#166534':p.status==='Diproses'?'#1565C0':'#B45309')+';padding:2px 8px;border-radius:99px;font-size:11px;font-weight:700">'+p.status+'</span></td><td style="padding:7px 8px;color:#6B7280;font-size:11px">'+fmtDate(p.tanggal)+'</td></tr>';
   }).join('');
   var html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Rekap Kudapan Warmindo</title></head><body style="font-family:Arial,sans-serif;margin:20px;color:#111">'
     +'<div style="background:linear-gradient(135deg,#FF6B35,#FF8C42);padding:20px;border-radius:12px;margin-bottom:16px"><div style="font-size:24px;font-weight:900;color:#fff">🍱 Kudapan Warmindo — Rekap Snack time kantor numeta!</div><div style="font-size:12px;color:rgba(255,255,255,.8);margin-top:4px">Dicetak: '+new Date().toLocaleString('id-ID')+'</div></div>'
     +'<div style="display:flex;gap:12px;margin-bottom:16px"><div style="flex:1;background:#E6F9F0;border-radius:8px;padding:12px"><div style="font-size:10px;color:#166534;font-weight:700">BEBAN PERUSAHAAN</div><div style="font-size:16px;font-weight:800;color:#1DBF73">Rp '+tB.toLocaleString('id')+'</div></div><div style="flex:1;background:'+(tO>0?'#FFEBEE':'#E6F9F0')+';border-radius:8px;padding:12px"><div style="font-size:10px;color:'+(tO>0?'#B71C1C':'#166534')+';font-weight:700">OVER BUDGET</div><div style="font-size:16px;font-weight:800;color:'+(tO>0?'#E53935':'#1DBF73')+'">Rp '+tO.toLocaleString('id')+'</div></div><div style="flex:1;background:#F7F7F8;border-radius:8px;padding:12px"><div style="font-size:10px;color:#9CA3AF;font-weight:700">TOTAL PESANAN</div><div style="font-size:16px;font-weight:800">'+list.length+'</div></div></div>'
-    +'<table style="width:100%;border-collapse:collapse;font-size:12px"><thead><tr style="background:#FF6B35;color:#fff"><th style="padding:8px;text-align:left">No</th><th style="padding:8px;text-align:left">Karyawan</th><th style="padding:8px;text-align:left">Menu</th><th style="padding:8px;text-align:left">Harga</th><th style="padding:8px;text-align:left">Ditanggung</th><th style="padding:8px;text-align:left">Over</th><th style="padding:8px;text-align:left">Status</th><th style="padding:8px;text-align:left">Tanggal</th></tr></thead><tbody>'+rows+'</tbody></table>'
+    +'<table style="width:100%;border-collapse:collapse;font-size:12px"><thead><tr style="background:#FF6B35;color:#fff"><th style="padding:8px;text-align:left">No</th><th style="padding:8px;text-align:left">Karyawan</th><th style="padding:8px;text-align:left">Warmindo</th><th style="padding:8px;text-align:left">Menu</th><th style="padding:8px;text-align:left">Harga</th><th style="padding:8px;text-align:left">Ditanggung</th><th style="padding:8px;text-align:left">Over</th><th style="padding:8px;text-align:left">Status</th><th style="padding:8px;text-align:left">Tanggal</th></tr></thead><tbody>'+rows+'</tbody></table>'
     +'<script>window.onload=function(){window.print();}<\/script></body></html>';
   var w=window.open('','_blank');if(!w){showToast('Aktifkan popup untuk PDF');return;}
   w.document.write(html);w.document.close();showToast('✅ PDF siap dicetak','ok');
@@ -2345,9 +2471,9 @@ function resetLunasKaryawan(kid,nama){
   promises.push(db.ref('tagihan/'+kid).remove());
   Promise.all(promises).then(function(){showToast('✅ Data lunas '+nama+' direset','ok');});
 }
-function tambahMenu(){var nama=document.getElementById('nm-nama').value.trim();var harga=parseInt(document.getElementById('nm-harga').value);var kategori=document.getElementById('nm-kategori')?document.getElementById('nm-kategori').value:'Lainnya';if(!nama||isNaN(harga)||harga<=0){showToast('Isi nama dan harga dengan benar');return;}var mid='m'+Date.now();db.ref('menu/'+mid).set({id:mid,nama:nama,harga:harga,kategori:kategori}).then(function(){showToast('✅ Menu ditambahkan','ok');document.getElementById('nm-nama').value='';document.getElementById('nm-harga').value='';});}
+function tambahMenu(){var nama=document.getElementById('nm-nama').value.trim();var harga=parseInt(document.getElementById('nm-harga').value);var kategori=document.getElementById('nm-kategori')?document.getElementById('nm-kategori').value:'Lainnya';if(!nama||isNaN(harga)||harga<=0){showToast('Isi nama dan harga dengan benar');return;}var mid='m'+Date.now();db.ref('menu/'+mid).set({id:mid,nama:nama,harga:harga,kategori:kategori,warmindoId:currentUser.id}).then(function(){showToast('✅ Menu ditambahkan','ok');document.getElementById('nm-nama').value='';document.getElementById('nm-harga').value='';});}
 function hapusMenu(id){if(!confirm('Hapus menu ini?'))return;db.ref('menu/'+id).remove().then(function(){showToast('Menu dihapus');});}
-function tambahKaryawan(){var nama=document.getElementById('nk-nama').value.trim();var pin=document.getElementById('nk-pin').value.trim();if(!nama||pin.length!==4||isNaN(pin)){showToast('Isi nama dan PIN 4 digit');return;}if(pin===ADMIN_PIN||pin===WARMINDO_PIN){showToast('PIN ini sudah dipakai sistem');return;}var kid='k'+Date.now();db.ref('karyawan/'+kid).set({id:kid,nama:nama,pin:pin}).then(function(){showToast('✅ Karyawan ditambahkan','ok');});}
+function tambahKaryawan(){var nama=document.getElementById('nk-nama').value.trim();var pin=document.getElementById('nk-pin').value.trim();if(!nama||pin.length!==4||isNaN(pin)){showToast('Isi nama dan PIN 4 digit');return;}if(isPinTaken(pin)){showToast('PIN ini sudah dipakai sistem');return;}var kid='k'+Date.now();db.ref('karyawan/'+kid).set({id:kid,nama:nama,pin:pin}).then(function(){showToast('✅ Karyawan ditambahkan','ok');});}
 
 // ─── IMPORT KARYAWAN EXCEL ───
 function unduhTemplateKaryawan(){
@@ -2389,7 +2515,7 @@ function importKaryawanExcel(){
         var pin=cleanCell(cols[iPin]||'').replace(/[^0-9]/g,'');
         if(!nama){if(cols.join('').trim()!=='')errors.push('Baris '+(i+1)+': nama kosong');continue;}
         if(pin.length!==4){errors.push('Baris '+(i+1)+' "'+nama+'": PIN harus 4 digit → "'+cleanCell(cols[iPin]||'')+'"');continue;}
-        if(pin===ADMIN_PIN||pin===WARMINDO_PIN){errors.push('Baris '+(i+1)+' "'+nama+'": PIN '+pin+' sudah dipakai sistem');continue;}
+        if(isPinTaken(pin)){errors.push('Baris '+(i+1)+' "'+nama+'": PIN '+pin+' sudah dipakai sistem');continue;}
         if(pinTerpakai.indexOf(pin)!==-1){errors.push('Baris '+(i+1)+' "'+nama+'": PIN '+pin+' sudah dipakai karyawan lain');continue;}
         // Cek duplikat nama
         var namaExists=cache.karyawan.some(function(k){return k.nama.toLowerCase()===nama.toLowerCase();});
@@ -2436,8 +2562,8 @@ function importKaryawanExcel(){
   reader.readAsText(file,'UTF-8');
 }
 function hapusKaryawan(id){if(!confirm('Hapus akun karyawan ini?'))return;db.ref('karyawan/'+id).remove().then(function(){showToast('Akun dihapus');});}
-function openGantiPin(kid){var k=cache.karyawan.find(function(x){return x.id===kid;});if(!k)return;editPinKid=kid;document.getElementById('gpin-nama').value=k.nama;document.getElementById('gpin-baru').value='';document.getElementById('gpin-konfirm').value='';document.getElementById('gpin-err').style.display='none';document.getElementById('modal-pin').classList.add('show');}
-function simpanPin(){var baru=document.getElementById('gpin-baru').value.trim();var konfirm=document.getElementById('gpin-konfirm').value.trim();var errEl=document.getElementById('gpin-err');if(baru.length!==4||isNaN(baru)){errEl.textContent='PIN harus 4 digit angka';errEl.style.display='block';return;}if(baru===ADMIN_PIN||baru===WARMINDO_PIN){errEl.textContent='PIN ini sudah dipakai sistem';errEl.style.display='block';return;}if(baru!==konfirm){errEl.textContent='PIN konfirmasi tidak cocok';errEl.style.display='block';return;}db.ref('karyawan/'+editPinKid+'/pin').set(baru).then(function(){showToast('✅ PIN berhasil diubah','ok');closeModal('modal-pin');});}
+function openGantiPin(kid,type){var list=type==='warmindo'?cache.warmindoAccounts:cache.karyawan;var k=list.find(function(x){return x.id===kid;});if(!k)return;editPinKid=kid;editPinType=type||'karyawan';document.getElementById('gpin-label').textContent=type==='warmindo'?'Warmindo':'Karyawan';document.getElementById('gpin-nama').value=k.nama;document.getElementById('gpin-baru').value='';document.getElementById('gpin-konfirm').value='';document.getElementById('gpin-err').style.display='none';document.getElementById('modal-pin').classList.add('show');}
+function simpanPin(){var baru=document.getElementById('gpin-baru').value.trim();var konfirm=document.getElementById('gpin-konfirm').value.trim();var errEl=document.getElementById('gpin-err');if(baru.length!==4||isNaN(baru)){errEl.textContent='PIN harus 4 digit angka';errEl.style.display='block';return;}if(isPinTaken(baru,editPinType==='warmindo'?editPinKid:undefined)){errEl.textContent='PIN ini sudah dipakai sistem';errEl.style.display='block';return;}if(baru!==konfirm){errEl.textContent='PIN konfirmasi tidak cocok';errEl.style.display='block';return;}var path=editPinType==='warmindo'?'warmindoAccounts/':'karyawan/';db.ref(path+editPinKid+'/pin').set(baru).then(function(){showToast('✅ PIN berhasil diubah','ok');closeModal('modal-pin');});}
 
 // ─────────────────────────────────────────────────────────
 //  TAGIHAN — RINCIAN PER HARI
@@ -2912,7 +3038,7 @@ function importMenuExcel(){
       var updates={};
       items.forEach(function(m){
         var mid='m'+Date.now()+'_'+Math.random().toString(36).slice(2,6);
-        updates['menu/'+mid]={id:mid,nama:m.nama,harga:m.harga,kategori:m.kategori};
+        updates['menu/'+mid]={id:mid,nama:m.nama,harga:m.harga,kategori:m.kategori,warmindoId:currentUser.id};
       });
       db.ref().update(updates).then(function(){
         showToast('✅ '+items.length+' menu berhasil diimport','ok');
