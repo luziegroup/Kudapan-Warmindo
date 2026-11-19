@@ -565,6 +565,67 @@ input:focus,select:focus,textarea:focus{border-color:var(--orange);box-shadow:0 
   </div>
 </div>
 
+<!-- MODAL DRIVE WEBHOOK -->
+<div class="modal-overlay" id="modal-drive-webhook">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div style="font-size:18px;font-weight:800;margin-bottom:4px">☁️ Pengaturan Push ke Drive</div>
+    <div style="font-size:13px;color:var(--text3);margin-bottom:14px">Kirim rekap ke Google Drive via Google Apps Script (tanpa OAuth)</div>
+    <div class="fg">
+      <label>URL Web App Google Apps Script</label>
+      <input type="text" id="dw-url" placeholder="https://script.google.com/macros/s/.../exec">
+    </div>
+    <div style="display:flex;gap:10px;margin-bottom:14px">
+      <div class="fg" style="flex:1;margin-bottom:0">
+        <label>Nama Folder Drive</label>
+        <input type="text" id="dw-folder" placeholder="Rekap Kudapan Warmindo" value="Rekap Kudapan Warmindo">
+      </div>
+      <div class="fg" style="flex:1;margin-bottom:0">
+        <label>Format File</label>
+        <select id="dw-format">
+          <option value="sheets">📊 Google Sheets</option>
+          <option value="csv">📄 File CSV</option>
+          <option value="both">📦 Sheets + CSV</option>
+        </select>
+      </div>
+    </div>
+    <div style="background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:12px;margin-bottom:14px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <span style="font-size:12px;font-weight:800;color:var(--text)">📜 Kode Google Apps Script</span>
+        <button class="btn secondary sm" type="button" onclick="toggleAppsScriptGuide()" id="btn-toggle-as-guide">Lihat Panduan ▾</button>
+      </div>
+      <div id="dw-guide-wrap" style="display:none">
+        <div style="font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:8px">
+          1. Buka <strong>script.google.com</strong> → buat <strong>New project</strong><br>
+          2. Hapus kode lama, tempel kode di bawah ini lalu <strong>Save</strong><br>
+          3. Klik <strong>Deploy → New deployment → Web app</strong><br>
+          &nbsp;&nbsp;&nbsp;• Execute as: <strong>Me</strong> · Who has access: <strong>Anyone</strong><br>
+          4. Salin <strong>Web app URL</strong> lalu tempel di kolom atas
+        </div>
+        <textarea id="dw-script-code" readonly style="font-family:monospace;font-size:11px;min-height:130px;background:#fff;margin-bottom:8px"></textarea>
+        <button class="btn secondary sm" type="button" onclick="copyAppsScriptCode()" style="width:100%">📋 Salin Kode Apps Script</button>
+      </div>
+    </div>
+    <button class="btn primary" onclick="saveDriveWebhookSettings()">💾 Simpan Pengaturan</button>
+    <button class="btn secondary" style="margin-top:8px" onclick="closeModal('modal-drive-webhook')">Batal</button>
+  </div>
+</div>
+
+<!-- MODAL HASIL PUSH DRIVE -->
+<div class="modal-overlay" id="modal-drive-result">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div style="text-align:center;margin-bottom:16px">
+      <div style="font-size:44px;margin-bottom:8px">☁️✅</div>
+      <div style="font-size:18px;font-weight:800;margin-bottom:4px">Rekap Berhasil Dikirim!</div>
+      <div style="font-size:13px;color:var(--text2)" id="dr-subtitle">Laporan sudah tersimpan di Google Drive</div>
+    </div>
+    <div style="background:var(--green-light);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:14px;font-size:13px;color:#166534;line-height:1.6" id="dr-detail"></div>
+    <div id="dr-links" style="display:flex;flex-direction:column;gap:8px;margin-bottom:8px"></div>
+    <button class="btn secondary" onclick="closeModal('modal-drive-result')">Tutup</button>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -651,7 +712,7 @@ var keranjang={},ratingPid=null,ratingMenuNama='',ratingValue=0;
 var selectedJadwalDay=new Date().getDay(),notifPermission=false;
 // showPesananExpanded: apakah ringkasan pesanan hari ini ditampilkan melebar
 var showPesananExpanded = true;
-var cache={karyawan:[],menu:[],pesanan:[],tagihan:{},jadwal:{},jamPesan:{},rating:{},lunasHistory:{},lunasBayar:{},chatPesan:{},warmindoAccounts:[]};
+var cache={karyawan:[],menu:[],pesanan:[],tagihan:{},jadwal:{},jamPesan:{},rating:{},lunasHistory:{},lunasBayar:{},chatPesan:{},warmindoAccounts:[],driveWebhook:null};
 
 // ─────────────────────────────────────────────────────────
 //  CONFIG
@@ -810,7 +871,8 @@ function startListeners(){
       _refreshChatBadges();
     }
   });
-  listeners=[{ref:refs.karyawan,event:'value',handler:h1},{ref:refs.menu,event:'value',handler:h2},{ref:refs.pesanan,event:'value',handler:h3},{ref:refs.tagihan,event:'value',handler:h4},{ref:refs.jadwal,event:'value',handler:h5},{ref:refs.jamPesan,event:'value',handler:h6},{ref:refs.rating,event:'value',handler:h7},{ref:refs.lunasHistory,event:'value',handler:h8},{ref:refs.lunasBayar,event:'value',handler:h9},{ref:refs.chatPesan,event:'value',handler:h10}];
+  var h11=db.ref('driveWebhookSettings').on('value',function(s){cache.driveWebhook=s.exists()?(s.val()||null):null;});
+  listeners=[{ref:refs.karyawan,event:'value',handler:h1},{ref:refs.menu,event:'value',handler:h2},{ref:refs.pesanan,event:'value',handler:h3},{ref:refs.tagihan,event:'value',handler:h4},{ref:refs.jadwal,event:'value',handler:h5},{ref:refs.jamPesan,event:'value',handler:h6},{ref:refs.rating,event:'value',handler:h7},{ref:refs.lunasHistory,event:'value',handler:h8},{ref:refs.lunasBayar,event:'value',handler:h9},{ref:refs.chatPesan,event:'value',handler:h10},{ref:db.ref('driveWebhookSettings'),event:'value',handler:h11}];
 }
 function clearListeners(){listeners.forEach(function(l){l.ref.off(l.event,l.handler);});listeners=[];}
 
@@ -1993,6 +2055,10 @@ function renderAdminTab(tab){
       +'<button class="btn secondary" style="flex:1;padding:9px;font-size:13px" onclick="exportPDF()">📄 PDF</button>'
       +'<button class="btn danger" style="flex:1;padding:9px;font-size:13px" onclick="openModalReset()">🗑️ Reset</button>'
       +'</div>'
+      +'<div style="display:flex;gap:8px;margin-top:8px;margin-bottom:4px">'
+      +'<button class="btn primary" id="btn-push-drive" style="flex:1;padding:10px;font-size:13px" onclick="pushRekapToDrive()">☁️ Push ke Google Drive</button>'
+      +'<button class="btn secondary" style="width:auto;padding:10px 12px;font-size:13px" onclick="openDriveWebhookModal()" title="Pengaturan Webhook Drive">⚙️</button>'
+      +'</div>'
       +'<div class="section-label">Detail Pesanan</div>'
       +lunasInfoHtml
       +detailHtml;
@@ -2209,9 +2275,10 @@ function saveJadwalDay(){
 // ─────────────────────────────────────────────────────────
 //  EXPORT EXCEL
 // ─────────────────────────────────────────────────────────
-function exportExcel(){
-  var list=getPesananFiltered();if(list.length===0){showToast('Tidak ada data untuk di-export');return;}
-  // Rekalkukasi beban sama persis dengan dashboard
+function buildRekapExportData(){
+  var list=getPesananFiltered();
+  if(list.length===0)return null;
+  // Rekalkulasi beban sama persis dengan dashboard
   var _byKidDate={};
   list.forEach(function(p){
     var kidKey=(p.kid&&p.kid!=='')?p.kid:(p.karyawan+'_'+p.tanggal);
@@ -2232,18 +2299,218 @@ function exportExcel(){
       p._selisihCalc=Math.max(0,(Number(p.harga)||0)-beban);
     });
   });
-  var rows=[['No','Karyawan','Warmindo','Menu','Qty','Harga','Ditanggung Kantor','Over Budget','Status','Tanggal','Waktu','Catatan']];
-  list.sort(function(a,b){return a.tanggal>b.tanggal?1:-1;}).forEach(function(p,i){
-    rows.push([i+1,p.karyawan,getWarmindoNama(p.warmindoId||'w1'),p.menu,p.qty,p.harga,p._bebanCalc,p._selisihCalc,p.status,p.tanggal,p.waktu||'',p.catatan||'']);
+  var headers=['No','Karyawan','Warmindo','Menu','Qty','Harga','Ditanggung Kantor','Over Budget','Status','Tanggal','Waktu','Catatan'];
+  var dataRows=[];
+  list.slice().sort(function(a,b){return a.tanggal>b.tanggal?1:-1;}).forEach(function(p,i){
+    dataRows.push([i+1,p.karyawan,getWarmindoNama(p.warmindoId||'w1'),p.menu,p.qty,p.harga,p._bebanCalc,p._selisihCalc,p.status,p.tanggal,p.waktu||'',p.catatan||'']);
   });
   var tB=list.reduce(function(a,p){return a+(p._bebanCalc||0);},0);
   var tO=list.reduce(function(a,p){return a+(p._selisihCalc||0);},0);
-  rows.push([]);rows.push(['','','','','TOTAL',tB,tO,'','','','']);
-  var csv=rows.map(function(r){return r.map(function(c){return'"'+String(c).replace(/"/g,'""')+'"';}).join(',');}).join('\n');
-  var blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
+  var totalRow=['','','','','TOTAL','',tB,tO,'','','',''];
+  var allRows=[headers].concat(dataRows).concat([[],totalRow]);
+  var csv=allRows.map(function(r){return r.map(function(c){return'"'+String(c).replace(/"/g,'""')+'"';}).join(',');}).join('\n');
+  var filterMap={hari:'Hari ini',minggu:'7 Hari',bulan:'Bulan ini',semua:'Semua',custom:(filterDariTgl||'...')+' s/d '+(filterSampaiTgl||'...')};
+  var namaFilter='Semua karyawan';
+  if(filterNama!=='semua'){var fk=cache.karyawan.find(function(x){return x.id===filterNama;});if(fk)namaFilter=fk.nama;}
+  return{
+    headers:headers,
+    rows:dataRows.concat([[],totalRow]),
+    csv:csv,
+    totalPesanan:list.length,
+    totalBeban:tB,
+    totalOver:tO,
+    filterLabel:(filterMap[filterTanggal]||filterTanggal)+' · '+namaFilter
+  };
+}
+function exportExcel(){
+  var data=buildRekapExportData();
+  if(!data){showToast('Tidak ada data untuk di-export');return;}
+  var blob=new Blob(['\uFEFF'+data.csv],{type:'text/csv;charset=utf-8;'});
   var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='rekap-makanyuk-'+today()+'.csv';
   document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
   showToast('✅ Excel (CSV) diunduh','ok');
+}
+
+// ─────────────────────────────────────────────────────────
+//  PUSH REKAP KE GOOGLE DRIVE (APPS SCRIPT WEBHOOK)
+// ─────────────────────────────────────────────────────────
+var APPS_SCRIPT_TEMPLATE=[
+  'function doPost(e) {',
+  '  try {',
+  '    var data = JSON.parse(e.postData.contents);',
+  '    var folderName = data.folderName || "Rekap Kudapan Warmindo";',
+  '    var format = data.format || "sheets";',
+  '    var folders = DriveApp.getFoldersByName(folderName);',
+  '    var folder = folders.hasNext() ? folders.next() : DriveApp.createFolder(folderName);',
+  '    var baseName = (data.fileName || ("rekap-kudapan-" + new Date().toISOString().slice(0, 10))).replace(/\\.csv$/i, "");',
+  '    var fileUrl = "";',
+  '    var savedName = "";',
+  '',
+  '    if (format === "sheets" || format === "both") {',
+  '      var ss = SpreadsheetApp.create(baseName);',
+  '      var sheet = ss.getSheets()[0];',
+  '      sheet.setName("Rekap");',
+  '      var rawRows = [',
+  '        [data.title || "Rekap Kudapan Warmindo"],',
+  '        ["Filter: " + (data.filterLabel || "-"), "Dicetak: " + (data.generatedAt || "")],',
+  '        ["Beban Perusahaan", data.summary ? data.summary.totalBeban : 0, "Over Budget", data.summary ? data.summary.totalOver : 0, "Total Pesanan", data.summary ? data.summary.totalPesanan : 0],',
+  '        []',
+  '      ];',
+  '      if (data.headers && data.headers.length) rawRows.push(data.headers);',
+  '      if (data.rows && data.rows.length) {',
+  '        for (var i = 0; i < data.rows.length; i++) rawRows.push(data.rows[i]);',
+  '      }',
+  '      var maxCols = 1;',
+  '      for (var r = 0; r < rawRows.length; r++) {',
+  '        if (rawRows[r].length > maxCols) maxCols = rawRows[r].length;',
+  '      }',
+  '      var padded = [];',
+  '      for (var r2 = 0; r2 < rawRows.length; r2++) {',
+  '        var row = rawRows[r2].slice();',
+  '        while (row.length < maxCols) row.push("");',
+  '        padded.push(row);',
+  '      }',
+  '      sheet.getRange(1, 1, padded.length, maxCols).setValues(padded);',
+  '      sheet.getRange(1, 1).setFontWeight("bold").setFontSize(13);',
+  '      if (data.headers && data.headers.length) {',
+  '        sheet.getRange(5, 1, 1, data.headers.length).setBackground("#FF6B35").setFontColor("#FFFFFF").setFontWeight("bold");',
+  '      }',
+  '      sheet.autoResizeColumns(1, maxCols);',
+  '      DriveApp.getFileById(ss.getId()).moveTo(folder);',
+  '      fileUrl = ss.getUrl();',
+  '      savedName = baseName;',
+  '    }',
+  '',
+  '    if (format === "csv" || format === "both") {',
+  '      var csvFile = folder.createFile(baseName + ".csv", "\\uFEFF" + (data.csv || ""), MimeType.CSV);',
+  '      if (!fileUrl) {',
+  '        fileUrl = csvFile.getUrl();',
+  '        savedName = baseName + ".csv";',
+  '      }',
+  '    }',
+  '',
+  '    return ContentService.createTextOutput(JSON.stringify({',
+  '      ok: true,',
+  '      fileName: savedName,',
+  '      fileUrl: fileUrl,',
+  '      folderUrl: folder.getUrl()',
+  '    })).setMimeType(ContentService.MimeType.JSON);',
+  '  } catch (err) {',
+  '    return ContentService.createTextOutput(JSON.stringify({',
+  '      ok: false,',
+  '      error: err.toString()',
+  '    })).setMimeType(ContentService.MimeType.JSON);',
+  '  }',
+  '}'
+].join('\n');
+
+function loadDriveWebhookConfig(){
+  if(cache.driveWebhook&&cache.driveWebhook.url)return cache.driveWebhook;
+  try{return JSON.parse(localStorage.getItem('drive_webhook_cfg')||'null');}catch(e){return null;}
+}
+function openDriveWebhookModal(){
+  var cfg=loadDriveWebhookConfig()||{};
+  document.getElementById('dw-url').value=cfg.url||'';
+  document.getElementById('dw-folder').value=cfg.folderName||'Rekap Kudapan Warmindo';
+  document.getElementById('dw-format').value=cfg.format||'sheets';
+  document.getElementById('dw-script-code').value=APPS_SCRIPT_TEMPLATE;
+  document.getElementById('modal-drive-webhook').classList.add('show');
+}
+function toggleAppsScriptGuide(){
+  var wrap=document.getElementById('dw-guide-wrap');
+  var btn=document.getElementById('btn-toggle-as-guide');
+  if(!wrap||!btn)return;
+  var open=wrap.style.display!=='none';
+  wrap.style.display=open?'none':'block';
+  btn.textContent=open?'Lihat Panduan ▾':'Tutup Panduan ▴';
+}
+function copyAppsScriptCode(){
+  var code=APPS_SCRIPT_TEMPLATE;
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(code).then(function(){showToast('✅ Kode Apps Script disalin','ok');}).catch(function(){
+      var ta=document.getElementById('dw-script-code');if(ta){ta.select();document.execCommand('copy');showToast('✅ Kode disalin','ok');}
+    });
+  } else {
+    var ta=document.getElementById('dw-script-code');if(ta){ta.select();document.execCommand('copy');showToast('✅ Kode disalin','ok');}
+  }
+}
+function saveDriveWebhookSettings(){
+  var url=document.getElementById('dw-url').value.trim();
+  var folderName=document.getElementById('dw-folder').value.trim()||'Rekap Kudapan Warmindo';
+  var format=document.getElementById('dw-format').value||'sheets';
+  if(!url||url.indexOf('https://')!==0){showToast('Masukkan URL Web App Apps Script yang valid (https://...)');return;}
+  var cfg={url:url,folderName:folderName,format:format,updatedAt:Date.now()};
+  cache.driveWebhook=cfg;
+  try{localStorage.setItem('drive_webhook_cfg',JSON.stringify(cfg));}catch(e){}
+  if(db){
+    db.ref('driveWebhookSettings').set(cfg).then(function(){
+      showToast('✅ Pengaturan Drive Webhook disimpan','ok');
+      closeModal('modal-drive-webhook');
+    }).catch(function(e){
+      showToast('✅ Tersimpan lokal ('+e.message+')','ok');
+      closeModal('modal-drive-webhook');
+    });
+  } else {
+    showToast('✅ Pengaturan Drive Webhook disimpan','ok');
+    closeModal('modal-drive-webhook');
+  }
+}
+function pushRekapToDrive(){
+  var cfg=loadDriveWebhookConfig();
+  if(!cfg||!cfg.url){
+    showToast('Atur URL Apps Script Webhook dulu','warn');
+    openDriveWebhookModal();
+    return;
+  }
+  var data=buildRekapExportData();
+  if(!data){showToast('Tidak ada data rekap untuk di-push');return;}
+  var btn=document.getElementById('btn-push-drive');
+  if(btn){btn.disabled=true;btn.textContent='⏳ Mengirim ke Drive...';}
+  var payload={
+    title:'Kudapan Warmindo — Rekap Snack Time',
+    fileName:'rekap-kudapan-'+today()+'-'+nowTime().replace(':',''),
+    folderName:cfg.folderName||'Rekap Kudapan Warmindo',
+    format:cfg.format||'sheets',
+    filterLabel:data.filterLabel,
+    generatedAt:new Date().toLocaleString('id-ID'),
+    summary:{totalPesanan:data.totalPesanan,totalBeban:data.totalBeban,totalOver:data.totalOver},
+    headers:data.headers,
+    rows:data.rows,
+    csv:data.csv
+  };
+  fetch(cfg.url,{
+    method:'POST',
+    headers:{'Content-Type':'text/plain;charset=utf-8'},
+    body:JSON.stringify(payload)
+  }).then(function(res){
+    return res.text().then(function(txt){
+      try{return JSON.parse(txt);}catch(e){return{ok:res.ok,raw:txt};}
+    });
+  }).then(function(resp){
+    if(btn){btn.disabled=false;btn.textContent='☁️ Push ke Google Drive';}
+    if(resp&&resp.ok===false){
+      showToast('❌ Gagal: '+(resp.error||'Apps Script error'));
+      return;
+    }
+    var detailHtml='<div><strong>Filter:</strong> '+escHtml(data.filterLabel)+'</div>'
+      +'<div><strong>Pesanan:</strong> '+data.totalPesanan+' · <strong>Beban:</strong> '+rp(data.totalBeban)+' · <strong>Over:</strong> '+rp(data.totalOver)+'</div>'
+      +(resp&&resp.fileName?'<div><strong>File:</strong> '+escHtml(resp.fileName)+'</div>':'')
+      +'<div><strong>Folder:</strong> '+escHtml(payload.folderName)+'</div>';
+    document.getElementById('dr-detail').innerHTML=detailHtml;
+    var linksEl=document.getElementById('dr-links');
+    linksEl.innerHTML='';
+    if(resp&&resp.fileUrl){
+      linksEl.innerHTML+='<a href="'+escAttr(resp.fileUrl)+'" target="_blank" rel="noopener noreferrer" class="btn primary" style="text-decoration:none">📄 Buka File di Google Drive ↗</a>';
+    }
+    if(resp&&resp.folderUrl){
+      linksEl.innerHTML+='<a href="'+escAttr(resp.folderUrl)+'" target="_blank" rel="noopener noreferrer" class="btn secondary" style="text-decoration:none">📁 Buka Folder Drive ↗</a>';
+    }
+    document.getElementById('modal-drive-result').classList.add('show');
+    showToast('✅ Rekap berhasil di-push ke Drive!','ok');
+  }).catch(function(err){
+    if(btn){btn.disabled=false;btn.textContent='☁️ Push ke Google Drive';}
+    showToast('❌ Gagal kirim ke Drive: '+err.message);
+  });
 }
 
 // ─────────────────────────────────────────────────────────
